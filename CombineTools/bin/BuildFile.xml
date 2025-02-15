@@ -14,7 +14,6 @@
 <bin file="PlotTest.cpp" name="PlotTest"></bin>
 <bin file="PostFitPlot2.cpp" name="PostFitPlot2"></bin>
 <bin file="PostFitShapesFromWorkspace.cpp" name="PostFitShapesFromWorkspace"></bin>
-<bin file="PostFit2DShapesFromWorkspace.cpp" name="PostFit2DShapesFromWorkspace"></bin>
 <bin file="PrePost.cpp" name="PrePost"></bin>
 <bin file="PrintPulls.cpp" name="PrintPulls"></bin>
 <bin file="RoundTrip.cpp" name="RoundTrip"></bin>
@@ -23,6 +22,7 @@
 <bin file="SOBPlot.cpp" name="SOBPlot"></bin>
 <bin file="YieldTable.cpp" name="YieldTable"></bin>
 <bin file="hzz4l.cpp" name="hzz4l"></bin>
+<bin file="hToA1A2.cpp" name="hToA1A2"></bin>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
@@ -30,7 +30,7 @@
 <use name="histfactory"/>
 <use name="libxml2"/>
 <use name="vdt"/>
-<use name="python3"/>
+<use name="python"/>
 <use name="boost_program_options"/>
 <use name="boost_filesystem"/>
 <use name="boost_python"/>
