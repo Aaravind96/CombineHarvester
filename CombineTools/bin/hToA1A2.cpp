@@ -159,7 +159,7 @@ int main(int argc, char** argv) {
   cb.cp().process({"ST"}).AddSyst(cb, "CMS_ST_xs", "lnN", SystMap<>::init(1.05));
   cb.cp().process({"embedded"}).AddSyst(cb, "CMS_normalization_embedded_13TeV", "lnN", SystMap<>::init(1.04));
   // Luminosity uncertainties, no embedded
-  if (year=="2016"){
+  if (year=="2016preVFP" || year=="2016postVFP"){
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).AddSyst(cb, "lumi_13TeV_2016", "lnN", SystMap<>::init(1.01));
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).AddSyst(cb, "lumi_13TeV_correlated16-18", "lnN", SystMap<>::init(1.006));
   }
@@ -204,8 +204,6 @@ int main(int argc, char** argv) {
         
     cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_normalization_fake_13TeV", "lnN", SystMap<>::init(1.20));
   }
-  // Account for differences in pre-UL and UL corrections 
-  cb.cp().process(JoinStr({bkg_procs_noEMB_nofake, {"embedded", fakeProcName}, sig_ggh, sig_vbf})).AddSyst(cb, "CMS_SUS24005_preUL", "lnN", SystMap<>::init(1.05));
     
   // // =========================== Shape uncertainties ===========================
   // // The AddSyst method supports {$BIN, $PROCESS, $MASS, $ERA, $CHANNEL, $ANALYSIS}
@@ -236,7 +234,7 @@ int main(int argc, char** argv) {
     // 50% correlated with MC
     addshapes(&cb, file, cats, {"embedded"}, "CMS_trgeff_single_"+channel_abbrv+"_"+year, 0.50);// 1.00 * 50%
     addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_trgeff_single_"+channel_abbrv+"_"+year, 0.866);// 1.00 * sqrt(1-50%^2)
-    if (channel=="mutau" or (channel=="etau" && year!="2016")){
+    if (channel=="mutau" or (channel=="etau" && year!="2016preVFP" && year!="2016postVFP")){
       addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_trgeff_cross_"+channel_abbrv+"_"+year, 1.00);
       addshapes(&cb, file, cats, {"embedded"}, "CMS_trgeff_cross_"+channel_abbrv+"_"+year, 0.50);
       addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_trgeff_cross_"+channel_abbrv+"_"+year, 0.866);
@@ -354,6 +352,11 @@ int main(int argc, char** argv) {
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JetHF_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JetRelativeBal", 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JetRelativeSample_"+year, 1.00);
+
+    // L1 prefiring
+    if (year != "2018"){
+        addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_prefiring_"+year, 1.00);
+    }
     
     // recoil correction, for Z+jets, W+jets, ggh and qqh (no W+jets in e+tau and mu+tau)
     // UES uncertainties, for MC without recoil correction
@@ -436,11 +439,11 @@ int main(int argc, char** argv) {
     
     set<string> bins = cb.bin_set();
     
-    TFile output(("hAsymm"+year+"_"+channel+"_"+mass1+"_"+mass2+".input.root").c_str(), "RECREATE");
+    TFile output(("hAsymm"+year+"_"+signalType+"_"+channel+"_"+mass1+"_"+mass2+".input.root").c_str(), "RECREATE");
     
     for (auto b : bins) {
-      cout << ">> Writing datacard for bin: " << b << " and mass point " << mass1 << ", " << mass2 << "\n";
-      cb.cp().bin({b}).mass({mass1, "*"}).WriteDatacard(b + "_" + mass1 + "_" + mass2 + ".txt", output);
+      cout << ">> Writing datacard for bin: " << b << " and " << signalType <<  " mass point " << mass1 << ", " << mass2 << "\n";
+      cb.cp().bin({b}).mass({mass1, "*"}).WriteDatacard(b + "_" + signalType + "_" + mass1 + "_" + mass2 + ".txt", output);
     }
     
 }
