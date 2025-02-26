@@ -1,0 +1,13 @@
+universe = vanilla
+x509userproxy = $ENV(X509_USER_PROXY)
+getenv = True
++JobFlavour = "tomorrow"
+Executable = Job_template.sh
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+transfer_input_files = Job_template.sh
+notification = never
+Output = output/template.out
+Error = error/template.error
+Log = log/template.log
+Queue 1
