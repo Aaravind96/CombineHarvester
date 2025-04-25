@@ -12,9 +12,12 @@ mass2=$(echo $line | awk '{print $3}')
 
 cat>Job_${signal}_${mass1}_${mass2}.sh<<EOF
 #!/bin/bash
-cd /afs/cern.ch/work/p/pdas/haa/luna/CMSSW_14_1_0_pre4/src/CombineHarvester/CombineTools/condor/
+cd /afs/cern.ch/work/p/pdas/haa/luna/CMSSW_14_1_0_pre4/src/CombineHarvester/CombineTools/
 cmsenv
 ulimit -s unlimited
+cd asymmCards/; combineCards.py hToA1A2_${signal}_allchannels_2018_${mass1}_${mass2}.txt hToA1A2_${signal}_allchannels_2017_${mass1}_${mass2}.txt hToA1A2_${signal}_allchannels_2016postVFP_${mass1}_${mass2}.txt hToA1A2_${signal}_allchannels_2016preVFP_${mass1}_${mass2}.txt > hToA1A2_${signal}_allchannels_allyears_${mass1}_${mass2}.txt; cd ../
+text2workspace.py asymmCards/hToA1A2_${signal}_allchannels_allyears_${mass1}_${mass2}.txt -m ${mass1}
+cd condor/
 mkdir ${signal}_${mass1}_${mass2}
 cd ${signal}_${mass1}_${mass2}
 combine -M AsymptoticLimits /afs/cern.ch/work/p/pdas/haa/luna/CMSSW_14_1_0_pre4/src/CombineHarvester/CombineTools/asymmCards/hToA1A2_${signal}_allchannels_allyears_${mass1}_${mass2}.root --rMin=-10 -t -1 -m ${mass1} | tee limits_allchannels_${signal}_${mass1}_${mass2}

@@ -211,7 +211,7 @@ int main(int argc, char** argv) {
   TFile* file;
   file = new TFile((aux_shapes+"out_"+channel+".root").c_str());// To be used for the addshapes function
     
-  // btagging efficiency, no embedded
+  // btagging efficiency, no embedded (correlated between eras: hf/lf/cferr1/cferr2, rename later)
   addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_btagsf_hf_"+year, 1.00);
   addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_btagsf_lf_"+year, 1.00);
   addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_btagsf_hfstats1_"+year, 1.00);
@@ -353,6 +353,9 @@ int main(int argc, char** argv) {
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JetRelativeBal", 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JetRelativeSample_"+year, 1.00);
 
+    // JER
+    addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JER_"+year, 1.00);
+
     // L1 prefiring
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_prefiring_"+year, 1.00);
 
@@ -384,6 +387,10 @@ int main(int argc, char** argv) {
     
     // top pt reweighting (no need to add if data/MC agreement is fairly good with nominal top pt sf applied)
     addshapes(&cb, file, cats, {"ttbar", fakeProcName}, "CMS_toppt_"+year, 1.00);
+
+    // ttbar scale uncertainties (correlated across years so we need to rename later)
+    addshapes(&cb, file, cats, {"ttbar"}, "CMS_renscfact_"+year, 1.00);
+    addshapes(&cb, file, cats, {"ttbar"}, "CMS_facscfact_"+year, 1.00);
     
     // tau tracking efficiency in embedded (on real tauh, no effect on fake bkg)
     if (channel=="etau" or channel=="mutau"){
@@ -419,9 +426,7 @@ int main(int argc, char** argv) {
       addshapes(&cb, file, cats, {fakeProcName}, "CMS_SSboth2D_"+year, 1.00);
       addshapes(&cb, file, cats, {fakeProcName}, "CMS_osss_"+year, 1.00);
     }
- 
-   
-    
+  
     // Name of the input datacard
     // The ExtractShapes method supports {$BIN, $PROCESS, $MASS, $SYSTEMATIC}
     cb.cp().backgrounds().ExtractShapes(
@@ -432,6 +437,14 @@ int main(int argc, char** argv) {
 				    aux_shapes + "out_"+channel+".root",
                                     "$BIN/$PROCESS",
                                     "$BIN/$PROCESS_$SYSTEMATIC");
+
+    // Renaming correlated uncertainties across eras
+    cb.cp().process({"ttbar"}).RenameSystematic(cb, "CMS_renscfact_"+year, "CMS_ttbar_renscfact");
+    cb.cp().process({"ttbar"}).RenameSystematic(cb, "CMS_facscfact_"+year, "CMS_ttbar_facscfact");
+    cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_btagsf_hf_"+year, "CMS_btagsf_hf");
+    cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_btagsf_lf_"+year, "CMS_btagsf_lf");
+    cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_btagsf_cferr1_"+year, "CMS_btagsf_cferr1");
+    cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_btagsf_cferr2_"+year, "CMS_btagsf_cferr2");
     
     ch::SetStandardBinNames(cb);
     
