@@ -306,10 +306,10 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     hbase->GetYaxis()->SetMaxDigits(4);
     hbase->GetYaxis()->SetTitle(yname.c_str());
     hbase->GetXaxis()->SetTitle(xname.c_str());
-    hbase->GetYaxis()->SetRangeUser(0, 400);
-    if (signame == "2b2t" && m1 != "40") hbase->GetYaxis()->SetRangeUser(0, 100);
-    if (signame == "2b2t" && year=="allyears") hbase->GetYaxis()->SetRangeUser(0, 40);
-    if (signame == "2b2t" && year=="allyears" && m1 == "40") hbase->GetYaxis()->SetRangeUser(0, 100);
+    hbase->GetYaxis()->SetRangeUser(0, 300);
+    if (signame == "2b2t" && m1 != "40") hbase->GetYaxis()->SetRangeUser(0, 80);
+    if (signame == "2b2t" && year=="allyears") hbase->GetYaxis()->SetRangeUser(0, 30);
+    if (signame == "2b2t" && year=="allyears" && m1 == "40") hbase->GetYaxis()->SetRangeUser(0, 80);
     //if (signame == "4b2t" && year=="allyears" && m1 == "30") hbase->GetYaxis()->SetRangeUser(0, 500);
     if (ch != "allchannels") hbase->GetYaxis()->SetRangeUser(0, 1500);
     hbase->GetYaxis()->SetMaxDigits(6);

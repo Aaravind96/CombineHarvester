@@ -359,6 +359,9 @@ int main(int argc, char** argv) {
     // L1 prefiring
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_prefiring_"+year, 1.00);
 
+    // PU
+    addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_puweight_"+year, 1.00);
+
     // recoil correction, for Z+jets, W+jets, ggh and qqh (no W+jets in e+tau and mu+tau)
     // UES uncertainties, for MC without recoil correction
     // TODO: should be CMS_boson_met_recoil_reso_0j also TODO: 2j?
