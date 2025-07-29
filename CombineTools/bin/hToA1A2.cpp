@@ -578,7 +578,7 @@ int main(int argc, char** argv) {
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JetHF_"+year, "CMS_scale_j_HF_"+year);
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JetRelativeBal", "CMS_scale_j_RelativeBal");
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JetRelativeSample_"+year, "CMS_scale_j_RelativeSample_"+year);
-    cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JER_"+year, "CMS_res_j"+year);
+    cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JER_"+year, "CMS_res_j_"+year);
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_prefiring_"+year, "CMS_l1_prefiring_"+year);
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_puweight_"+year, "CMS_pileup_"+year);
     cb.cp().process({"ZJ", fakeProcName}).RenameSystematic(cb, "CMS_Zpt_"+year, "Z_pt_reweighting_"+year);
