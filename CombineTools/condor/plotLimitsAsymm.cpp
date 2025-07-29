@@ -241,6 +241,16 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     int nptsC = limit->Draw(Form("limit*%g:mh", percentageScale), "quantileExpected==0.5", "goff");
     double* rtmpC = limit->GetV1();
     double* mtmpC = limit->GetV2();
+
+    std::ofstream myfile;
+    myfile.open("median_limits.txt", ios::in|ios::ate);
+
+    for(int m = 0; m < npts; ++m){
+	myfile<<mtmpC[m]<<"\t"<<m1<<"\t"<<rtmpC[m]<<std::endl;
+    }
+
+    myfile.close();
+
     // multiplyXsec(rtmpC,xsecs);
     TGraph* g_central = new TGraph(npts,mtmpC,rtmpC);
     g_central->SetLineColor(kBlue);
@@ -312,6 +322,8 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     if (signame == "2b2t" && year=="allyears" && m1 == "40") hbase->GetYaxis()->SetRangeUser(0, 80);
     //if (signame == "4b2t" && year=="allyears" && m1 == "30") hbase->GetYaxis()->SetRangeUser(0, 500);
     if (ch != "allchannels") hbase->GetYaxis()->SetRangeUser(0, 1500);
+//    if (signame == "2b2t") hbase->GetYaxis()->SetRangeUser(0, 100);
+//    if (signame == "4b2t") hbase->GetYaxis()->SetRangeUser(0, 500);
     hbase->GetYaxis()->SetMaxDigits(6);
 
     //make plot

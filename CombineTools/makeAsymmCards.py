@@ -64,27 +64,27 @@ for channel in channels:
             os.system(f'text2workspace.py "{allch_filename}" -m {masspoint[0]}')
 
 
-            allch_workspace_rootfile = f"asymmCards/hToA1A2_{signalType}_{channel}_{year}_{masspoint[0]}_{masspoint[1]}.root"
-            logfile = f"asymmCards/limits_{signalType}_{channel}_{year}_{masspoint[0]}_{masspoint[1]}"
-            if (doBlindedLimits):  # -t -1 option
-                combineCommand = f'combine -M AsymptoticLimits {allch_workspace_rootfile} --rMin=-10 -t -1 -m {masspoint[0]} | tee {logfile}'
-            else: 
-                combineCommand = f'combine -M AsymptoticLimits {allch_workspace_rootfile} -m {masspoint[0]} | tee {logfile}'
-            os.system(combineCommand)
-            
-            # this produces a file called higgsCombineTest.AsymptoticLimits.mH30.root, higgsCombineTest.AsymptoticLimits.mH40.root in the top-level directory for (30, 15)
-            oldName = f'higgsCombineTest.AsymptoticLimits.mH{masspoint[0]}.root'
-            # rename this file to something more descriptive that will not get overwritten, and move it to asymmCards/
-            newName = f"higgsCombineTest.AsymptoticLimits.{signalType}_{channel}_{year}.m2_{masspoint[0]}.m1_{masspoint[1]}.root"
-            os.system(f"mv {oldName} asymmCards/{newName}")
+#            allch_workspace_rootfile = f"asymmCards/hToA1A2_{signalType}_{channel}_{year}_{masspoint[0]}_{masspoint[1]}.root"
+#            logfile = f"asymmCards/limits_{signalType}_{channel}_{year}_{masspoint[0]}_{masspoint[1]}"
+#            if (doBlindedLimits):  # -t -1 option
+#                combineCommand = f'combine -M AsymptoticLimits {allch_workspace_rootfile} --rMin=-10 -t -1 -m {masspoint[0]} | tee {logfile}'
+#            else: 
+#                combineCommand = f'combine -M AsymptoticLimits {allch_workspace_rootfile} -m {masspoint[0]} | tee {logfile}'
+#            os.system(combineCommand)
+#            
+#            # this produces a file called higgsCombineTest.AsymptoticLimits.mH30.root, higgsCombineTest.AsymptoticLimits.mH40.root in the top-level directory for (30, 15)
+#            oldName = f'higgsCombineTest.AsymptoticLimits.mH{masspoint[0]}.root'
+#            # rename this file to something more descriptive that will not get overwritten, and move it to asymmCards/
+#            newName = f"higgsCombineTest.AsymptoticLimits.{signalType}_{channel}_{year}.m2_{masspoint[0]}.m1_{masspoint[1]}.root"
+#            os.system(f"mv {oldName} asymmCards/{newName}")
 
-        # Remember we are itearting over massList, which is e.g. (40, 15), (50, 15), etc. all with the same m_1 = 15 GeV. Get this m_1, can just get the 0th entry, 1st element
-        thisM1Point = massList[0][1]
-        # Next we need to hadd the corresponding mass points but in ascending order. 
-        filesToHadd = ""
-        for masspoint in massList:
-            filesToHadd += f"asymmCards/higgsCombineTest.AsymptoticLimits.{signalType}_{channel}_{year}.m2_{masspoint[0]}.m1_{masspoint[1]}.root"
-            filesToHadd += " "
-        print(filesToHadd)
-        # add the signalType to the file name, to distinguish the cascade and non-cascade ones
-        os.system(f'hadd -f -j -k asymmCards/higgsCombine_a1a2_{signalType}_{channel}_{year}_m1_{thisM1Point}.root {filesToHadd}')
+#        # Remember we are itearting over massList, which is e.g. (40, 15), (50, 15), etc. all with the same m_1 = 15 GeV. Get this m_1, can just get the 0th entry, 1st element
+#        thisM1Point = massList[0][1]
+#        # Next we need to hadd the corresponding mass points but in ascending order. 
+#        filesToHadd = ""
+#        for masspoint in massList:
+#            filesToHadd += f"asymmCards/higgsCombineTest.AsymptoticLimits.{signalType}_{channel}_{year}.m2_{masspoint[0]}.m1_{masspoint[1]}.root"
+#            filesToHadd += " "
+#        print(filesToHadd)
+#        # add the signalType to the file name, to distinguish the cascade and non-cascade ones
+#        os.system(f'hadd -f -j -k asymmCards/higgsCombine_a1a2_{signalType}_{channel}_{year}_m1_{thisM1Point}.root {filesToHadd}')
