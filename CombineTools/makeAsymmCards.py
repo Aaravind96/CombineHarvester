@@ -54,9 +54,9 @@ for channel in channels:
             ch2_filename   = f"asymmCards/hToA1A2_{channel}_2_{year}_{signalType}_{masspoint[0]}_{masspoint[1]}.txt"
             ch3_filename   = f"asymmCards/hToA1A2_{channel}_3_{year}_{signalType}_{masspoint[0]}_{masspoint[1]}.txt"
             allch_filename = f"asymmCards/hToA1A2_{signalType}_{channel}_{year}_{masspoint[0]}_{masspoint[1]}.txt"
-            os.system(f'echo "* autoMCStats 0.0" >> {ch1_filename}')
-            os.system(f'echo "* autoMCStats 0.0" >> {ch2_filename}')
-            os.system(f'echo "* autoMCStats 0.0" >> {ch3_filename}')
+            os.system(f'echo "* autoMCStats 10 0" >> {ch1_filename}')
+            os.system(f'echo "* autoMCStats 10 0" >> {ch2_filename}')
+            os.system(f'echo "* autoMCStats 10 0" >> {ch3_filename}')
 
             os.system(f'combineCards.py {ch1_filename} {ch2_filename} {ch3_filename} > {allch_filename}')
 
