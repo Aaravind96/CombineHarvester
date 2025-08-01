@@ -153,11 +153,11 @@ int main(int argc, char** argv) {
   cb.cp().process({"ggh_hww","qqh_hww","Zh_hww","Wh_hww"}).AddSyst(cb, "BR_hww", "lnN", SystMap<>::init(1.015));
   cb.cp().process(JoinStr({{"ggh_htt","ggh_hww"},sig_ggh})).AddSyst(cb, "pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
   cb.cp().process(JoinStr({{"qqh_htt","qqh_hww"},sig_vbf})).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.021));
-  cb.cp().process({"ZJ"}).AddSyst(cb, "CMS_normalization_Z_13TeV", "lnN", SystMap<>::init(1.02));
+  cb.cp().process({"ZJ"}).AddSyst(cb, "normalization_Z", "lnN", SystMap<>::init(1.02));
   cb.cp().process({"ttbar"}).AddSyst(cb, "cross_section_ttbar", "lnN", SystMap<>::init(1.042));
   cb.cp().process({"VV"}).AddSyst(cb, "cross_section_VV", "lnN", SystMap<>::init(1.05));
   cb.cp().process({"ST"}).AddSyst(cb, "cross_section_ST", "lnN", SystMap<>::init(1.05));
-  cb.cp().process({"embedded"}).AddSyst(cb, "CMS_normalization_embedded_13TeV", "lnN", SystMap<>::init(1.04));
+  cb.cp().process({"embedded"}).AddSyst(cb, "normalization_embedded", "lnN", SystMap<>::init(1.04));
   // Luminosity uncertainties, no embedded
   if (year=="2016preVFP" || year=="2016postVFP"){
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).AddSyst(cb, "lumi_13TeV_2016", "lnN", SystMap<>::init(1.01));
@@ -183,7 +183,7 @@ int main(int argc, char** argv) {
     // muID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
-    cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_normalization_qcd_13TeV", "lnN", SystMap<>::init(1.20));
+    cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd", "lnN", SystMap<>::init(1.20));
   }
     
   if (channel=="etau"){
@@ -191,7 +191,7 @@ int main(int argc, char** argv) {
     // eleID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_eleID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_eleID_13TeV", "lnN", SystMap<>::init(1.01732));
-    cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_normalization_fake_13TeV", "lnN", SystMap<>::init(1.20));
+    cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake", "lnN", SystMap<>::init(1.20));
   }
     
   if (channel=="mutau"){
@@ -199,7 +199,7 @@ int main(int argc, char** argv) {
     // muID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
-    cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_normalization_fake_13TeV", "lnN", SystMap<>::init(1.20));
+    cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake", "lnN", SystMap<>::init(1.20));
   }
     
   // // =========================== Shape uncertainties ===========================
@@ -447,14 +447,15 @@ int main(int argc, char** argv) {
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauES_dm1_"+year, "CMS_scale_t_DM1_2016");
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauES_dm10_"+year, "CMS_scale_t_DM10_2016");
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauES_dm11_"+year, "CMS_scale_t_DM11_2016");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm0_"+year, "CMS_EMB_scale_t_DeepTau2017v2p1_DM0_2016");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm1_"+year, "CMS_EMB_scale_t_DeepTau2017v2p1_DM1_2016");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm10_"+year, "CMS_EMB_scale_t_DeepTau2017v2p1_DM10_2016");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm11_"+year, "CMS_EMB_scale_t_DeepTau2017v2p1_DM11_2016");
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleTES_dm0_"+year, "CMS_scale_t_DeepTau2017v2p1_DM0_genElectron_2016");
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleTES_dm1_"+year, "CMS_scale_t_DeepTau2017v2p1_DM1_genElectron_2016");
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muTES_dm0_"+year, "CMS_scale_t_DeepTau2017v2p1_DM0_genMuon_2016");
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muTES_dm1_"+year, "CMS_scale_t_DeepTau2017v2p1_DM1_genMuon_2016");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm0_"+year, "CMS_EMB_scale_t_DM0_2016");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm1_"+year, "CMS_EMB_scale_t_DM1_2016");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm10_"+year, "CMS_EMB_scale_t_DM10_2016");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm11_"+year, "CMS_EMB_scale_t_DM11_2016");
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleTES_dm0_"+year, "CMS_scale_t_eFake_DM0_2016");
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleTES_dm1_"+year, "CMS_scale_t_eFake_DM1_2016");
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muTES_dm0_"+year, "CMS_scale_t_muFake_DM0_2016");
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muTES_dm1_"+year, "CMS_scale_t_muFake_DM1_2016");
+	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_puweight_"+year, "CMS_pileup_2016");
     }
 
     if (year=="2017"){
@@ -482,6 +483,7 @@ int main(int argc, char** argv) {
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleTES_dm1_"+year, "CMS_scale_t_eFake_DM1_"+year);
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muTES_dm0_"+year, "CMS_scale_t_muFake_DM0_"+year);
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muTES_dm1_"+year, "CMS_scale_t_muFake_DM1_"+year);
+	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_puweight_"+year, "CMS_pileup_"+year);
     }
 
     if (channel=="emu"){
@@ -580,9 +582,8 @@ int main(int argc, char** argv) {
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JetRelativeSample_"+year, "CMS_scale_j_RelativeSample_"+year);
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JER_"+year, "CMS_res_j_"+year);
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_prefiring_"+year, "CMS_l1_prefiring_"+year);
-    cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_puweight_"+year, "CMS_pileup_"+year);
     cb.cp().process({"ZJ", fakeProcName}).RenameSystematic(cb, "CMS_Zpt_"+year, "Z_pt_reweighting_"+year);
-    cb.cp().process({"ttbar"}).RenameSystematic(cb, "CMS_toppt_"+year, "top_pt_reweighting_"+year);
+    cb.cp().process({{"ttbar"}, fakeProcName}).RenameSystematic(cb, "CMS_toppt_"+year, "top_pt_reweighting_"+year);
     cb.cp().process({"ttbar"}).RenameSystematic(cb, "CMS_renscfact_"+year, "QCDscale_ren_ttbar");
     cb.cp().process({"ttbar"}).RenameSystematic(cb, "CMS_facscfact_"+year, "QCDscale_fac_ttbar");
     cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_nonDY_"+year, "CMS_EMB_nonDY_"+year);
