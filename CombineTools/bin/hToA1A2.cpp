@@ -183,7 +183,10 @@ int main(int argc, char** argv) {
     // muID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
-    cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd", "lnN", SystMap<>::init(1.20));
+    if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd_em_2016preVFP", "lnN", SystMap<>::init(1.20));
+    if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd_em_2016postVFP", "lnN", SystMap<>::init(1.20));
+    if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd_em_2017", "lnN", SystMap<>::init(1.20));
+    if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd_em_2018", "lnN", SystMap<>::init(1.20));
   }
     
   if (channel=="etau"){
@@ -191,7 +194,10 @@ int main(int argc, char** argv) {
     // eleID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_eleID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_eleID_13TeV", "lnN", SystMap<>::init(1.01732));
-    cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake", "lnN", SystMap<>::init(1.20));
+    if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_et_2016preVFP", "lnN", SystMap<>::init(1.20));
+    if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_et_2016postVFP", "lnN", SystMap<>::init(1.20));
+    if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_et_2017", "lnN", SystMap<>::init(1.20));
+    if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_et_2018", "lnN", SystMap<>::init(1.20));
   }
     
   if (channel=="mutau"){
@@ -199,7 +205,10 @@ int main(int argc, char** argv) {
     // muID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
-    cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake", "lnN", SystMap<>::init(1.20));
+    if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_mt_2016preVFP", "lnN", SystMap<>::init(1.20));
+    if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_mt_2016postVFP", "lnN", SystMap<>::init(1.20));
+    if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_mt_2017", "lnN", SystMap<>::init(1.20));
+    if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_mt_2018", "lnN", SystMap<>::init(1.20));
   }
     
   // // =========================== Shape uncertainties ===========================
