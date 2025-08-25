@@ -153,11 +153,21 @@ int main(int argc, char** argv) {
   cb.cp().process({"ggh_hww","qqh_hww","Zh_hww","Wh_hww"}).AddSyst(cb, "BR_hww", "lnN", SystMap<>::init(1.015));
   cb.cp().process(JoinStr({{"ggh_htt","ggh_hww"},sig_ggh})).AddSyst(cb, "pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
   cb.cp().process(JoinStr({{"qqh_htt","qqh_hww"},sig_vbf})).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.021));
-  cb.cp().process({"ZJ"}).AddSyst(cb, "normalization_Z", "lnN", SystMap<>::init(1.02));
+  cb.cp().process({"Wh_htt","Wh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.019));
+  cb.cp().process({"Zh_htt","Zh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.013));
+  cb.cp().process({"tth"}).AddSyst(cb, "pdf_Higgs_tth", "lnN", SystMap<>::init(1.036));
+  cb.cp().process({"ggh_htt","ggh_hww"}).AddSyst(cb, "QCDscale_gg", "lnN", SystMap<>::init(1.039));
+  cb.cp().process({"qqh_htt","qqh_hww"}).AddSyst(cb, "QCDscale_qqbar", "lnN", SystMap<>::init(0.9967/1.0043));
+  cb.cp().process({"Wh_htt","Wh_hww"}).AddSyst(cb, "QCDscale_qqbar", "lnN", SystMap<>::init(0.993/1.005));
+  cb.cp().process({"Zh_htt","Zh_hww"}).AddSyst(cb, "QCDscale_qqbar", "lnN", SystMap<>::init(0.969/1.038));
+  cb.cp().process({"tth"}).AddSyst(cb, "QCDscale_tth", "lnN", SystMap<>::init( 0.908/1.058));
   cb.cp().process({"ttbar"}).AddSyst(cb, "cross_section_ttbar", "lnN", SystMap<>::init(1.042));
   cb.cp().process({"VV"}).AddSyst(cb, "cross_section_VV", "lnN", SystMap<>::init(1.05));
   cb.cp().process({"ST"}).AddSyst(cb, "cross_section_ST", "lnN", SystMap<>::init(1.05));
+  cb.cp().process({"ZJ"}).AddSyst(cb, "normalization_Z", "lnN", SystMap<>::init(1.02));
   cb.cp().process({"embedded"}).AddSyst(cb, "normalization_embedded", "lnN", SystMap<>::init(1.04));
+  cb.cp().process(JoinStr({sig_ggh,sig_vbf})).AddSyst(cb, "signal_theory", "lnN", SystMap<>::init(1.036));
+
   // Luminosity uncertainties, no embedded
   if (year=="2016preVFP" || year=="2016postVFP"){
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).AddSyst(cb, "lumi_13TeV_2016", "lnN", SystMap<>::init(1.01));
