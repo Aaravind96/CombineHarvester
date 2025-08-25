@@ -47,29 +47,29 @@ for massList in allMasses[signalType]:
         print(f"Converting .txt to workspace....")
         os.system(f'text2workspace.py asymmCards/hToA1A2_{signalType}_allchannels_{year}_{masspoint[0]}_{masspoint[1]}.txt -m {masspoint[0]}')
 
-    for masspoint in massList:
-        print(f"Creating higgsCombineTest.AsymptoticLimits.*.root....")
-        if (doBlindedLimits):  # -t -1 option
-            combineCommand = f'combine -M AsymptoticLimits asymmCards/hToA1A2_{signalType}_allchannels_{year}_{masspoint[0]}_{masspoint[1]}.root --rMin=-10 -t -1 -m {masspoint[0]} | tee asymmCards/limits_allchannels_{masspoint[0]}_{masspoint[1]}'
-        else: 
-            combineCommand = f'combine -M AsymptoticLimits asymmCards/hToA1A2_{signalType}_allchannels_{year}_{masspoint[0]}_{masspoint[1]}.root -m {masspoint[0]} | tee asymmCards/limits_allchannels_{masspoint[0]}_{masspoint[1]}'
-        # this makes a file called higgsCombineTest.AsymptoticLimits.mH60.root
-        os.system(combineCommand)
-
-    os.system("rm asymmCards/higgsCombineTest.AsymptoticLimits*.root")
-    os.system("mv higgsCombineTest.AsymptoticLimits*.root asymmCards/")
-
-    # Each entry in massList assumes the same m_1. Get this number. 
-    thisM1Point = massList[0][1]
-    # Next we need to hadd the corresponding mass points but in ascending order. 
-    filesToHadd = ""
-
-    print(f"Hadding all files into one .root...")
-    for masspoint in massList:
-        filesToHadd += f"asymmCards/higgsCombineTest.AsymptoticLimits.mH{masspoint[0]}.root "
-    print(filesToHadd)
-    os.system(f'hadd -f -j -k asymmCards/higgsCombine_a1a2_{signalType}_allchannels_{year}_m1_{thisM1Point}.root {filesToHadd}')
-
-    user=os.environ['USER']
-    firstletteruser=user[0]
+#    for masspoint in massList:
+#        print(f"Creating higgsCombineTest.AsymptoticLimits.*.root....")
+#        if (doBlindedLimits):  # -t -1 option
+#            combineCommand = f'combine -M AsymptoticLimits asymmCards/hToA1A2_{signalType}_allchannels_{year}_{masspoint[0]}_{masspoint[1]}.root --rMin=-10 -t -1 -m {masspoint[0]} | tee asymmCards/limits_allchannels_{masspoint[0]}_{masspoint[1]}'
+#        else: 
+#            combineCommand = f'combine -M AsymptoticLimits asymmCards/hToA1A2_{signalType}_allchannels_{year}_{masspoint[0]}_{masspoint[1]}.root -m {masspoint[0]} | tee asymmCards/limits_allchannels_{masspoint[0]}_{masspoint[1]}'
+#        # this makes a file called higgsCombineTest.AsymptoticLimits.mH60.root
+#        os.system(combineCommand)
+#
+#    os.system("rm asymmCards/higgsCombineTest.AsymptoticLimits*.root")
+#    os.system("mv higgsCombineTest.AsymptoticLimits*.root asymmCards/")
+#
+#    # Each entry in massList assumes the same m_1. Get this number. 
+#    thisM1Point = massList[0][1]
+#    # Next we need to hadd the corresponding mass points but in ascending order. 
+#    filesToHadd = ""
+#
+#    print(f"Hadding all files into one .root...")
+#    for masspoint in massList:
+#        filesToHadd += f"asymmCards/higgsCombineTest.AsymptoticLimits.mH{masspoint[0]}.root "
+#    print(filesToHadd)
+#    os.system(f'hadd -f -j -k asymmCards/higgsCombine_a1a2_{signalType}_allchannels_{year}_m1_{thisM1Point}.root {filesToHadd}')
+#
+#    user=os.environ['USER']
+#    firstletteruser=user[0]
 
