@@ -55,7 +55,7 @@ void plot2d()
   hist->SetStats(0);
   hist->Draw("COLZ");
   hist->Draw("TEXT45 same");
-  c1->SaveAs("/eos/user/p/pdas/www/Ha1a2/limits/280725/plotLimit_2d.png");
-  c1->SaveAs("/eos/user/p/pdas/www/Ha1a2/limits/280725/plotLimit_2d.pdf");
+  c1->SaveAs("/eos/user/p/pdas/www/Ha1a2/limits/210825/plotLimit_2d.png");
+  c1->SaveAs("/eos/user/p/pdas/www/Ha1a2/limits/210825/plotLimit_2d.pdf");
 }
 
