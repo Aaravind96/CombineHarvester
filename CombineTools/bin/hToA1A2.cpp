@@ -146,6 +146,12 @@ int main(int argc, char** argv) {
   using ch::syst::bin_id;
   using ch::syst::process;
   using ch::JoinStr;
+
+  std::string channel_abbrv;
+
+  if (channel == "mutau") channel_abbrv = "mt";
+  if (channel == "etau")  channel_abbrv = "et";
+  if (channel == "emu")   channel_abbrv = "em";
     
   // =========================== Normalization uncertainties ===========================
   // The AddSyst method supports {$BIN, $PROCESS, $MASS, $ERA, $CHANNEL, $ANALYSIS}
@@ -164,9 +170,9 @@ int main(int argc, char** argv) {
   cb.cp().process({"ttbar"}).AddSyst(cb, "cross_section_ttbar", "lnN", SystMap<>::init(1.042));
   cb.cp().process({"VV"}).AddSyst(cb, "cross_section_VV", "lnN", SystMap<>::init(1.05));
   cb.cp().process({"ST"}).AddSyst(cb, "cross_section_ST", "lnN", SystMap<>::init(1.05));
-  cb.cp().process({"ZJ"}).AddSyst(cb, "normalization_Z", "lnN", SystMap<>::init(1.02));
-  cb.cp().process({"embedded"}).AddSyst(cb, "normalization_embedded", "lnN", SystMap<>::init(1.04));
-  cb.cp().process(JoinStr({sig_ggh,sig_vbf})).AddSyst(cb, "signal_theory", "lnN", SystMap<>::init(1.036));
+  cb.cp().process({"ZJ"}).AddSyst(cb, "CMS_NPS25003_normalization_Z", "lnN", SystMap<>::init(1.02));
+  cb.cp().process({"embedded"}).AddSyst(cb, "CMS_NPS25003_normalization_embedded", "lnN", SystMap<>::init(1.04));
+  cb.cp().process(JoinStr({sig_ggh,sig_vbf})).AddSyst(cb, "CMS_NPS25003_signal_theory", "lnN", SystMap<>::init(1.036));
 
   // Luminosity uncertainties, no embedded
   if (year=="2016preVFP" || year=="2016postVFP"){
@@ -193,10 +199,11 @@ int main(int argc, char** argv) {
     // muID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
-    if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd_em_2016preVFP", "lnN", SystMap<>::init(1.20));
-    if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd_em_2016postVFP", "lnN", SystMap<>::init(1.20));
-    if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd_em_2017", "lnN", SystMap<>::init(1.20));
-    if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_qcd_em_2018", "lnN", SystMap<>::init(1.20));
+    cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
+    //if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_em_2016preVFP", "lnN", SystMap<>::init(1.20));
+    //if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_em_2016postVFP", "lnN", SystMap<>::init(1.20));
+    //if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_em_2017", "lnN", SystMap<>::init(1.20));
+    //if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_em_2018", "lnN", SystMap<>::init(1.20));
   }
     
   if (channel=="etau"){
@@ -204,10 +211,11 @@ int main(int argc, char** argv) {
     // eleID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_eleID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_eleID_13TeV", "lnN", SystMap<>::init(1.01732));
-    if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_et_2016preVFP", "lnN", SystMap<>::init(1.20));
-    if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_et_2016postVFP", "lnN", SystMap<>::init(1.20));
-    if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_et_2017", "lnN", SystMap<>::init(1.20));
-    if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_et_2018", "lnN", SystMap<>::init(1.20));
+    cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
+    //if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_et_2016preVFP", "lnN", SystMap<>::init(1.20));
+    //if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_et_2016postVFP", "lnN", SystMap<>::init(1.20));
+    //if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_et_2017", "lnN", SystMap<>::init(1.20));
+    //if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_et_2018", "lnN", SystMap<>::init(1.20));
   }
     
   if (channel=="mutau"){
@@ -215,10 +223,11 @@ int main(int argc, char** argv) {
     // muID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
-    if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_mt_2016preVFP", "lnN", SystMap<>::init(1.20));
-    if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_mt_2016postVFP", "lnN", SystMap<>::init(1.20));
-    if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_mt_2017", "lnN", SystMap<>::init(1.20));
-    if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "normalization_fake_mt_2018", "lnN", SystMap<>::init(1.20));
+    cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
+    //if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_mt_2016preVFP", "lnN", SystMap<>::init(1.20));
+    //if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_mt_2016postVFP", "lnN", SystMap<>::init(1.20));
+    //if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_mt_2017", "lnN", SystMap<>::init(1.20));
+    //if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_mt_2018", "lnN", SystMap<>::init(1.20));
   }
     
   // // =========================== Shape uncertainties ===========================
@@ -238,11 +247,11 @@ int main(int argc, char** argv) {
   addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_btagsf_cferr2_"+year, 1.00);
 
   // Trigger efficiency
-  std::string channel_abbrv;
-    
-  if (channel == "mutau") channel_abbrv = "mt";
-  if (channel == "etau")  channel_abbrv = "et";
-  if (channel == "emu")   channel_abbrv = "em";
+  //std::string channel_abbrv;
+  //  
+  //if (channel == "mutau") channel_abbrv = "mt";
+  //if (channel == "etau")  channel_abbrv = "et";
+  //if (channel == "emu")   channel_abbrv = "em";
 
   if (channel=="etau" or channel=="mutau"){
     // TODO: make sure this works
@@ -466,10 +475,10 @@ int main(int argc, char** argv) {
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauES_dm1_"+year, "CMS_scale_t_DM1_2016");
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauES_dm10_"+year, "CMS_scale_t_DM10_2016");
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauES_dm11_"+year, "CMS_scale_t_DM11_2016");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm0_"+year, "CMS_EMB_scale_t_DM0_2016");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm1_"+year, "CMS_EMB_scale_t_DM1_2016");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm10_"+year, "CMS_EMB_scale_t_DM10_2016");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm11_"+year, "CMS_EMB_scale_t_DM11_2016");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm0_"+year, "CMS_NPS25003_EMB_scale_t_DM0_2016");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm1_"+year, "CMS_NPS25003_EMB_scale_t_DM1_2016");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm10_"+year, "CMS_NPS25003_EMB_scale_t_DM10_2016");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm11_"+year, "CMS_NPS25003_EMB_scale_t_DM11_2016");
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleTES_dm0_"+year, "CMS_scale_t_eFake_DM0_2016");
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleTES_dm1_"+year, "CMS_scale_t_eFake_DM1_2016");
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muTES_dm0_"+year, "CMS_scale_t_muFake_DM0_2016");
@@ -494,10 +503,10 @@ int main(int argc, char** argv) {
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauES_dm1_"+year, "CMS_scale_t_DM1_"+year);
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauES_dm10_"+year, "CMS_scale_t_DM10_"+year);
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauES_dm11_"+year, "CMS_scale_t_DM11_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm0_"+year, "CMS_EMB_scale_t_DM0_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm1_"+year, "CMS_EMB_scale_t_DM1_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm10_"+year, "CMS_EMB_scale_t_DM10_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm11_"+year, "CMS_EMB_scale_t_DM11_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm0_"+year, "CMS_NPS25003_EMB_scale_t_DM0_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm1_"+year, "CMS_NPS25003_EMB_scale_t_DM1_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm10_"+year, "CMS_NPS25003_EMB_scale_t_DM10_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauES_dm11_"+year, "CMS_NPS25003_EMB_scale_t_DM11_"+year);
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleTES_dm0_"+year, "CMS_scale_t_eFake_DM0_"+year);
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleTES_dm1_"+year, "CMS_scale_t_eFake_DM1_"+year);
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muTES_dm0_"+year, "CMS_scale_t_muFake_DM0_"+year);
@@ -506,78 +515,112 @@ int main(int argc, char** argv) {
     }
 
     if (channel=="emu"){
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf, {"embedded"}})).RenameSystematic(cb, "CMS_trgeff_Mu8E23_"+channel_abbrv+"_"+year, "CMS_NPS25003_trgeff_Mu8E23_"+channel_abbrv+"_"+year);
+	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf, {"embedded"}})).RenameSystematic(cb, "CMS_trgeff_Mu23E12_"+channel_abbrv+"_"+year, "CMS_NPS25003_trgeff_Mu23E12_"+channel_abbrv+"_"+year);
+	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf, {"embedded"}})).RenameSystematic(cb, "CMS_trgeff_both_"+channel_abbrv+"_"+year, "CMS_NPS25003_trgeff_both_"+channel_abbrv+"_"+year);
+	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_trgeff_Mu8E23_"+channel_abbrv+"_"+year, "CMS_NPS25003_EMB_trgeff_Mu8E23_"+channel_abbrv+"_"+year);
+	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_trgeff_Mu23E12_"+channel_abbrv+"_"+year, "CMS_NPS25003_EMB_trgeff_Mu23E12_"+channel_abbrv+"_"+year);
+	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_trgeff_both_"+channel_abbrv+"_"+year, "CMS_NPS25003_EMB_trgeff_both_"+channel_abbrv+"_"+year);
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_eleID_13TeV", "CMS_eff_e_id");
 	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_muID_13TeV", "CMS_eff_m_id");
-	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_eleID_13TeV", "CMS_EMB_eff_e_id");
-	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muID_13TeV", "CMS_EMB_eff_m_id");
+	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_eleID_13TeV", "CMS_NPS25003_EMB_eff_e_id");
+	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muID_13TeV", "CMS_NPS25003_EMB_eff_m_id");
+        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_resolution_"+year, "CMS_NPS25003_met_0j_resolution_"+year);
+        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_response_"+year, "CMS_NPS25003_met_0j_response_"+year);
+        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_resolution_"+year, "CMS_NPS25003_met_1j_resolution_"+year);
+        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_response_"+year, "CMS_NPS25003_met_1j_response_"+year);
+        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_resolution_"+year, "CMS_NPS25003_met_gt1j_resolution_"+year);
+        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_response_"+year, "CMS_NPS25003_met_gt1j_response_"+year);
+        cb.cp().process({"ttbar","ST","VV","Zh_htt","Zh_hww","Wh_htt","Wh_hww","tth",fakeProcName}).RenameSystematic(cb, "CMS_UES_"+year, "CMS_NPS25003_UES_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_SScorrection_"+year, "CMS_NPS25003_SScorrection_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_SSclosure_"+year, "CMS_NPS25003_SSclosure_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_SSboth2D_"+year, "CMS_NPS25003_SSboth2D_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_osss_"+year, "CMS_NPS25003_osss_"+year);
     }
 
     if (channel=="etau"){
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleID_13TeV", "CMS_eff_e_id");
+	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauidWP_et_"+year, "CMS_NPS25003_eff_t_WP_et_"+year);
         cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_eleID_13TeV", "CMS_eff_e_id");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_eleID_13TeV", "CMS_EMB_eff_e_id");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_eleID_13TeV", "CMS_NPS25003_EMB_eff_e_id");
+	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_tauidWP_et_"+year, "CMS_NPS25003_EMB_eff_t_WP_et_"+year);
     }
 
     if (channel=="mutau"){
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muID_13TeV", "CMS_eff_m_id");
         cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_muID_13TeV", "CMS_eff_m_id");
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muID_13TeV", "CMS_EMB_eff_m_id");
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muID_13TeV", "CMS_NPS25003_EMB_eff_m_id");
     }
 
-    if (channel=="etau"){
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauidWP_et_"+year, "CMS_eff_t_WP_etau_"+year);
-	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_tauidWP_et_"+year, "CMS_EMB_eff_t_WP_etau_"+year);
-    }
+//    if (channel=="etau"){
+//        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauidWP_et_"+year, "CMS_NPS25003_eff_t_WP_etau_"+year);
+//	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_tauidWP_et_"+year, "CMS_NPS25003_EMB_eff_t_WP_etau_"+year);
+//    }
 
     if (channel=="etau" or channel=="mutau"){
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt20to25_"+year, "CMS_eff_t_pt20to25_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt25to30_"+year, "CMS_eff_t_pt25to30_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt30to35_"+year, "CMS_eff_t_pt30to35_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt35to40_"+year, "CMS_eff_t_pt35to40_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt40to500_"+year, "CMS_eff_t_pt40to500_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt500to1000_"+year, "CMS_eff_t_pt500to1000_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_ptgt1000_"+year, "CMS_eff_t_ptgt1000_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt20to25_"+year, "CMS_EMB_eff_t_pt20to25_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt25to30_"+year, "CMS_EMB_eff_t_pt25to30_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt30to35_"+year, "CMS_EMB_eff_t_pt30to35_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt35to40_"+year, "CMS_EMB_eff_t_pt35to40_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt40to500_"+year, "CMS_EMB_eff_t_pt40to500_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt500to1000_"+year, "CMS_EMB_eff_t_pt500to1000_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_ptgt1000_"+year, "CMS_EMB_eff_t_ptgt1000_"+year);
-	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSe_bar_"+year, "CMS_eff_t_VSe_barrel_"+year);
-	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSe_end_"+year, "CMS_eff_t_VSe_endcap_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta0to0p4_"+year, "CMS_eff_t_VSmu_eta0to0p4_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta0p4to0p8_"+year, "CMS_eff_t_VSmu_eta0p4to0p8_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta0p8to1p2_"+year, "CMS_eff_t_VSmu_eta0p8to1p2_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta1p2to1p7_"+year, "CMS_eff_t_VSmu_eta1p2to1p7_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta1p7to2p3_"+year, "CMS_eff_t_VSmu_eta1p7to2p3_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt0to25_"+year, "CMS_fake_t_pt0to25_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt25to30_"+year, "CMS_fake_t_pt25to30_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt30to35_"+year, "CMS_fake_t_pt30to35_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt35to40_"+year, "CMS_fake_t_pt35to40_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt40to50_"+year, "CMS_fake_t_pt40to50_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt50to60_"+year, "CMS_fake_t_pt50to60_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt60to80_"+year, "CMS_fake_t_pt60to80_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt80to100_"+year, "CMS_fake_t_pt80to100_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt100to120_"+year, "CMS_fake_t_pt100to120_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt120to150_"+year, "CMS_fake_t_pt120to150_"+year);
-	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_ptgt150_"+year, "CMS_fake_t_ptgt150_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf, {"embedded"}})).RenameSystematic(cb, "CMS_trgeff_single_"+channel_abbrv+"_"+year, "CMS_NPS25003_trgeff_single_"+channel_abbrv+"_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_trgeff_single_"+channel_abbrv+"_"+year, "CMS_NPS25003_EMB_trgeff_single_"+channel_abbrv+"_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf, {"embedded"}})).RenameSystematic(cb, "CMS_trgeff_cross_"+channel_abbrv+"_"+year, "CMS_NPS25003_trgeff_cross_"+channel_abbrv+"_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_trgeff_cross_"+channel_abbrv+"_"+year, "CMS_NPS25003_EMB_trgeff_cross_"+channel_abbrv+"_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt20to25_"+year, "CMS_NPS25003_eff_t_pt20to25_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt25to30_"+year, "CMS_NPS25003_eff_t_pt25to30_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt30to35_"+year, "CMS_NPS25003_eff_t_pt30to35_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt35to40_"+year, "CMS_NPS25003_eff_t_pt35to40_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt40to500_"+year, "CMS_NPS25003_eff_t_pt40to500_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_pt500to1000_"+year, "CMS_NPS25003_eff_t_pt500to1000_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_tauideff_ptgt1000_"+year, "CMS_NPS25003_eff_t_ptgt1000_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt20to25_"+year, "CMS_NPS25003_EMB_eff_t_pt20to25_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt25to30_"+year, "CMS_NPS25003_EMB_eff_t_pt25to30_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt30to35_"+year, "CMS_NPS25003_EMB_eff_t_pt30to35_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt35to40_"+year, "CMS_NPS25003_EMB_eff_t_pt35to40_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt40to500_"+year, "CMS_NPS25003_EMB_eff_t_pt40to500_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_pt500to1000_"+year, "CMS_NPS25003_EMB_eff_t_pt500to1000_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tauideff_ptgt1000_"+year, "CMS_NPS25003_EMB_eff_t_ptgt1000_"+year);
+	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tautrack_dm0dm10_"+year, "CMS_NPS25003_EMB_tautrack_dm0dm10_"+year);
+	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tautrack_dm1_"+year, "CMS_NPS25003_EMB_tautrack_dm1_"+year);
+	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_tautrack_dm11_"+year, "CMS_NPS25003_EMB_tautrack_dm11_"+year);
+	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSe_bar_"+year, "CMS_NPS25003_eff_t_VSe_barrel_"+year);
+	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSe_end_"+year, "CMS_NPS25003_eff_t_VSe_endcap_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta0to0p4_"+year, "CMS_NPS25003_eff_t_VSmu_eta0to0p4_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta0p4to0p8_"+year, "CMS_NPS25003_eff_t_VSmu_eta0p4to0p8_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta0p8to1p2_"+year, "CMS_NPS25003_eff_t_VSmu_eta0p8to1p2_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta1p2to1p7_"+year, "CMS_NPS25003_eff_t_VSmu_eta1p2to1p7_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauideff_VSmu_eta1p7to2p3_"+year, "CMS_NPS25003_eff_t_VSmu_eta1p7to2p3_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt0to25_"+year, "CMS_NPS25003_fake_t_pt0to25_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt25to30_"+year, "CMS_NPS25003_fake_t_pt25to30_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt30to35_"+year, "CMS_NPS25003_fake_t_pt30to35_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt35to40_"+year, "CMS_NPS25003_fake_t_pt35to40_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt40to50_"+year, "CMS_NPS25003_fake_t_pt40to50_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt50to60_"+year, "CMS_NPS25003_fake_t_pt50to60_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt60to80_"+year, "CMS_NPS25003_fake_t_pt60to80_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt80to100_"+year, "CMS_NPS25003_fake_t_pt80to100_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt100to120_"+year, "CMS_NPS25003_fake_t_pt100to120_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt120to150_"+year, "CMS_NPS25003_fake_t_pt120to150_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_ptgt150_"+year, "CMS_NPS25003_fake_t_ptgt150_"+year);
+        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_resolution_"+year, "CMS_NPS25003_met_0j_resolution_"+year);
+        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_response_"+year, "CMS_NPS25003_met_0j_response_"+year);
+        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_resolution_"+year, "CMS_NPS25003_met_1j_resolution_"+year);
+        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_response_"+year, "CMS_NPS25003_met_1j_response_"+year);
+        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_resolution_"+year, "CMS_NPS25003_met_gt1j_resolution_"+year);
+        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_response_"+year, "CMS_NPS25003_met_gt1j_response_"+year);
+        cb.cp().process({"ttbar","ST","VV","Zh_htt","Zh_hww","Wh_htt","Wh_hww","tth",fakeProcName}).RenameSystematic(cb, "CMS_UES_"+year, "CMS_NPS25003_UES_"+year);
+	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_crosstrg_fakefactor_"+year, "CMS_NPS25003_crosstrg_fakefactor_"+year);
     }
 
     if (channel=="etau" or channel=="emu"){
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleES_bar_"+year, "CMS_scale_e_barrel_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleES_end_"+year, "CMS_scale_e_endcap_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_eleES_bar_"+year, "CMS_EMB_scale_e_barrel_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_eleES_end_"+year, "CMS_EMB_scale_e_endcap_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleES_bar_"+year, "CMS_NPS25003_scale_e_barrel_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_eleES_end_"+year, "CMS_NPS25003_scale_e_endcap_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_eleES_bar_"+year, "CMS_NPS25003_EMB_scale_e_barrel_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_eleES_end_"+year, "CMS_NPS25003_EMB_scale_e_endcap_"+year);
     }
 
     if (channel=="mutau" or channel=="emu"){
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muES_eta0to1p2_"+year, "CMS_scale_m_eta0to1p2_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muES_eta1p2to2p1_"+year, "CMS_scale_m_eta1p2to2p1_"+year);
-        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muES_eta2p1to2p4_"+year, "CMS_scale_m_eta2p1to2p4_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muES_eta0to1p2_"+year, "CMS_EMB_scale_m_eta0to1p2_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muES_eta1p2to2p1_"+year, "CMS_EMB_scale_m_eta1p2to2p1_"+year);
-        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muES_eta2p1to2p4_"+year, "CMS_EMB_scale_m_eta2p1to2p4_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muES_eta0to1p2_"+year, "CMS_NPS25003_scale_m_eta0to1p2_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muES_eta1p2to2p1_"+year, "CMS_NPS25003_scale_m_eta1p2to2p1_"+year);
+        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_muES_eta2p1to2p4_"+year, "CMS_NPS25003_scale_m_eta2p1to2p4_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muES_eta0to1p2_"+year, "CMS_NPS25003_EMB_scale_m_eta0to1p2_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muES_eta1p2to2p1_"+year, "CMS_NPS25003_EMB_scale_m_eta1p2to2p1_"+year);
+        cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muES_eta2p1to2p4_"+year, "CMS_NPS25003_EMB_scale_m_eta2p1to2p4_"+year);
     }
 
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_btagsf_hf_"+year, "CMS_btag_shape_hf");
@@ -600,12 +643,12 @@ int main(int argc, char** argv) {
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JetRelativeBal", "CMS_scale_j_RelativeBal");
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JetRelativeSample_"+year, "CMS_scale_j_RelativeSample_"+year);
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JER_"+year, "CMS_res_j_"+year);
-    cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_prefiring_"+year, "CMS_l1_prefiring_"+year);
-    cb.cp().process({"ZJ", fakeProcName}).RenameSystematic(cb, "CMS_Zpt_"+year, "Z_pt_reweighting_"+year);
-    cb.cp().process({{"ttbar"}, fakeProcName}).RenameSystematic(cb, "CMS_toppt_"+year, "top_pt_reweighting_"+year);
+    cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_prefiring_"+year, "CMS_NPS25003_l1_prefiring_"+year);
+    cb.cp().process({"ZJ", fakeProcName}).RenameSystematic(cb, "CMS_Zpt_"+year, "CMS_NPS25003_Z_pt_reweighting_"+year);
+    cb.cp().process({{"ttbar"}, fakeProcName}).RenameSystematic(cb, "CMS_toppt_"+year, "CMS_NPS25003_top_pt_reweighting_"+year);
     cb.cp().process({"ttbar"}).RenameSystematic(cb, "CMS_renscfact_"+year, "QCDscale_ren_ttbar");
     cb.cp().process({"ttbar"}).RenameSystematic(cb, "CMS_facscfact_"+year, "QCDscale_fac_ttbar");
-    cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_nonDY_"+year, "CMS_EMB_nonDY_"+year);
+    cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_nonDY_"+year, "CMS_NPS25003_EMB_nonDY_"+year);
 
     ch::SetStandardBinNames(cb);
     
