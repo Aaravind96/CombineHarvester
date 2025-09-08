@@ -200,10 +200,6 @@ int main(int argc, char** argv) {
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
     cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
-    //if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_em_2016preVFP", "lnN", SystMap<>::init(1.20));
-    //if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_em_2016postVFP", "lnN", SystMap<>::init(1.20));
-    //if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_em_2017", "lnN", SystMap<>::init(1.20));
-    //if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_em_2018", "lnN", SystMap<>::init(1.20));
   }
     
   if (channel=="etau"){
@@ -212,10 +208,6 @@ int main(int argc, char** argv) {
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_eleID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_eleID_13TeV", "lnN", SystMap<>::init(1.01732));
     cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
-    //if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_et_2016preVFP", "lnN", SystMap<>::init(1.20));
-    //if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_et_2016postVFP", "lnN", SystMap<>::init(1.20));
-    //if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_et_2017", "lnN", SystMap<>::init(1.20));
-    //if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_et_2018", "lnN", SystMap<>::init(1.20));
   }
     
   if (channel=="mutau"){
@@ -224,10 +216,6 @@ int main(int argc, char** argv) {
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
     cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
-    //if (year=="2016preVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_mt_2016preVFP", "lnN", SystMap<>::init(1.20));
-    //if (year=="2016postVFP") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_mt_2016postVFP", "lnN", SystMap<>::init(1.20));
-    //if (year=="2017") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_mt_2017", "lnN", SystMap<>::init(1.20));
-    //if (year=="2018") cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_mt_2018", "lnN", SystMap<>::init(1.20));
   }
     
   // // =========================== Shape uncertainties ===========================
@@ -247,12 +235,6 @@ int main(int argc, char** argv) {
   addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_btagsf_cferr2_"+year, 1.00);
 
   // Trigger efficiency
-  //std::string channel_abbrv;
-  //  
-  //if (channel == "mutau") channel_abbrv = "mt";
-  //if (channel == "etau")  channel_abbrv = "et";
-  //if (channel == "emu")   channel_abbrv = "em";
-
   if (channel=="etau" or channel=="mutau"){
     // TODO: make sure this works
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_trgeff_single_"+channel_abbrv+"_"+year, 1.00);
