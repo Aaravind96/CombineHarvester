@@ -20,7 +20,7 @@ text2workspace.py asymmCards/hToA1A2_${signal}_allchannels_allyears_${mass1}_${m
 cd condor/
 mkdir ${signal}_${mass1}_${mass2}
 cd ${signal}_${mass1}_${mass2}
-combine -M AsymptoticLimits /afs/cern.ch/work/p/pdas/haa/luna/CMSSW_14_1_0_pre4/src/CombineHarvester/CombineTools/asymmCards/hToA1A2_${signal}_allchannels_allyears_${mass1}_${mass2}.root --rMin=-10 -t -1 -m ${mass1} | tee limits_allchannels_${signal}_${mass1}_${mass2}
+combine -M AsymptoticLimits /afs/cern.ch/work/p/pdas/haa/luna/CMSSW_14_1_0_pre4/src/CombineHarvester/CombineTools/asymmCards/hToA1A2_${signal}_allchannels_allyears_${mass1}_${mass2}.root --rMin=-10 -m ${mass1} | tee limits_allchannels_${signal}_${mass1}_${mass2}
 
 EOF
 

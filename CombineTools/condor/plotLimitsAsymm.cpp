@@ -1,4 +1,4 @@
-//adapted from Kevin Pedro's plotLimi.C code from 2018 CMSDAS, and from https://github.com/samhiggie/cppLimits/blob/main/haa/scripts/plotLimit.C
+//adapted from Kevin Pedro's plotLimit.C code from 2018 CMSDAS, and from https://github.com/samhiggie/cppLimits/blob/main/haa/scripts/plotLimit.C
 
 #include <TROOT.h>
 #include <TFile.h>
@@ -91,24 +91,15 @@ void getRange(int n, double* arr, double& ymin, double& ymax){
 }
 
 // usage:
-// infile : input ROOT file path
-// sigtype: 4b2t (cascade) or 2b2t (non-cascade)
-// year: 2018, 2017, or 2016
-// channel: mutau, etau, or emu
-// m1: mass of a_1
-// root -l 'plotLimitsAsymm.C+("cascade/higgsCombine_a1a2_4b2t_2018_mutau_m1_15.root", "4b2t", "2018", "mutau", "15", 2, false)
+// root -l -b -q 'plotLimitsAsymm.C+("cascade/higgsCombine_a1a2_4b2t_2018_mutau_m1_15.root", "4b2t", "2018", "mutau", "15", 2, false)
 void plotLimitsAsymm(string infile, string signame, string year, string ch, string m1, int nsigma=0, bool showObserved=false){
     //cross section values
     vector<double> masses = {};
     vector<double> xsecs = {};
-    //double xsecVal = 0.0001/48.37;
-    //double xsecVal = 0.0001/1.33;
-    double xsecVal = 0.00002;
-    //double xsecVal = 0.000005;
+    double xsecVal = 48.6+3.78; //(ggH + VBF in pb)
 
     if ((signame == "4b2t") && (m1 == "15")) {
         masses = {30, 40, 50, 60, 70, 80, 90, 100, 110};
-        //xsecs = {48.37*0.0001,48.37*0.0001,48.37*0.0001,48.37*0.0001,48.37*0.0001,48.37*0.0001,48.37*0.0001,48.37*0.0001,48.37*0.0001,48.37*0.0001}; //stop masses 800-1200
         xsecs = {xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal};
     }
     else if ((signame == "4b2t") && (m1 == "20")) {
@@ -159,12 +150,12 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     string process, yname, xname, channel, description;
 
     if (signame == "4b2t") {
-        process = "h #rightarrow a_{1} a_{2} #rightarrow 4b2#tau";
-        yname = "B(H#rightarrow a_{1} a_{2} #rightarrow 4b 2#tau) (\%)";
+        process = "h #rightarrow a_{1} a_{2} #rightarrow 2#tau4b";
+        yname = "B(H#rightarrow a_{1} a_{2} #rightarrow 2#tau4b) (\%)";
     }
     else if (signame == "2b2t") {
-        process = "h #rightarrow a_{1} a_{2} #rightarrow 2b2#tau";
-        yname = "B(H#rightarrow a_{1} a_{2} #rightarrow 2b 2#tau) (\%)";
+        process = "h #rightarrow a_{1} a_{2} #rightarrow 2#tau2b";
+        yname = "B(H#rightarrow a_{1} a_{2} #rightarrow 2#tau2b) (\%)";
     }
 
     if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
@@ -202,7 +193,6 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     pave->AddText(process.c_str());
     pave->AddText(channel.c_str());
     pave->AddText(description.c_str());
-    //pave->AddText("m_{#tilde{#chi}_{1}^{0}} = 1 GeV");
 
     //preamble of legend
     leg->AddEntry((TObject*)NULL,"95% CL upper limits","");
@@ -212,17 +202,16 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     g_xsec->SetLineColor(kMagenta);
     g_xsec->SetLineStyle(1);
     g_xsec->SetLineWidth(2);
-    //leg->AddEntry(g_xsec,"Theoretical","l");
     getRange(xsecs.size(),xsecs.data(),ymin,ymax);
     //only get x range once
     getRange(masses.size(),masses.data(),xmin,xmax);
 
     //get observed limit
-    ///int npts = limit->Draw("limit:mh","abs(quantileExpected+1)<0.01","goff");
     double percentageScale = 100;
-    int npts = limit->Draw(Form("limit*%g:mh", percentageScale), "quantileExpected==-1", "goff");
+    int npts = limit->Draw(Form("limit*%g:limitErr*%g:mh", percentageScale, percentageScale), "quantileExpected==-1", "goff");
     double* rtmp = limit->GetV1();
-    double* mtmp = limit->GetV2();
+    double* rerrtmp = limit->GetV2();
+    double* mtmp = limit->GetV3();
 
     // multiplyXsec(rtmp,xsecs);
     TGraph* g_obs = new TGraph(npts,mtmp,rtmp);
@@ -232,32 +221,30 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     g_obs->SetLineStyle(1);
     g_obs->SetLineWidth(2);
     if (showObserved) {
-        leg->AddEntry(g_obs,"Observed","pe");
+        leg->AddEntry(g_obs,"Observed","pl");
     }
     getRange(npts,rtmp,ymin,ymax);
 
-    //get central value (expected)
-    //int nptsC = limit->Draw("limit:mh","abs(quantileExpected-0.5)<0.01","goff");
-    int nptsC = limit->Draw(Form("limit*%g:mh", percentageScale), "quantileExpected==0.5", "goff");
-    double* rtmpC = limit->GetV1();
-    double* mtmpC = limit->GetV2();
-
     std::ofstream myfile;
-    myfile.open("median_limits.txt", ios::in|ios::ate);
+    myfile.open("median_limits_"+ch+".txt", ios::in|ios::ate);
 
     for(int m = 0; m < npts; ++m){
-	myfile<<mtmpC[m]<<"\t"<<m1<<"\t"<<rtmpC[m]<<std::endl;
+	if (signame == "4b2t" && ((std::abs(mtmp[m]) == 30 && m1 == "15") || (mtmp[m] == 40 && m1 == "20") || (mtmp[m] == 60 && m1 == "30"))) continue; // skip duplicate mass points with higher limits
+        myfile<<mtmp[m]<<"\t"<<m1<<"\t"<<(rtmp[m]*xsecVal/percentageScale)<<std::endl; // convert to cross section
     }
 
     myfile.close();
+
+    //get central value (expected)
+    int nptsC = limit->Draw(Form("limit*%g:mh", percentageScale), "quantileExpected==0.5", "goff");
+    double* rtmpC = limit->GetV1();
+    double* mtmpC = limit->GetV2();
 
     // multiplyXsec(rtmpC,xsecs);
     TGraph* g_central = new TGraph(npts,mtmpC,rtmpC);
     g_central->SetLineColor(kBlue);
     g_central->SetLineStyle(2);
     g_central->SetLineWidth(4);
-    // g_central->SetLineStyle(1);
-    // g_central->SetLineWidth(6);
     leg->AddEntry(g_central,"Median expected","l");
     getRange(npts,rtmpC,ymin,ymax);
 
@@ -282,48 +269,18 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     //extend range
     ymax = ymax*2;
     ymin = ymin/2;
-    //xmax = xmax + 100;
-    //xmin = xmin - 100;
-
-    // // TEMP: FOR COMPARISON: TODO: REMOVE THIS BLOCK after making comparisons with m_vis
-    // if ((signame == "4b2t") && (m1 == "15")) {
-    //     ymax = 1210;
-    // }
-    // else if ((signame == "4b2t") && (m1 == "20")) {
-    //     ymax = 430;
-    // }
-    // else if ((signame == "4b2t") && (m1 == "30")) {
-    //     ymax = 1350;
-    // }
-    // else if ((signame == "2b2t") && (m1 == "15")) {
-    //     ymax = 197;
-    // }
-    // else if ((signame == "2b2t") && (m1 == "20")) {
-    //     ymax = 68;
-    // }
-    // else if ((signame == "2b2t") && (m1 == "30")) {
-    //     ymax = 50;
-    // }
-    // else if ((signame == "2b2t") && (m1 == "40")) {
-    //     ymax = 270;
-    // }
-    // else if ((signame == "2b2t") && (m1 == "50")) {
-    //     ymax = 66;
-    // }
 
     //make histo for axes
     TH1F* hbase = new TH1F("hbase","",100,xmin,xmax);
     hbase->GetYaxis()->SetMaxDigits(4);
     hbase->GetYaxis()->SetTitle(yname.c_str());
+    hbase->GetYaxis()->SetTitleOffset(1.7);
     hbase->GetXaxis()->SetTitle(xname.c_str());
+    hbase->GetXaxis()->SetTitleOffset(1.2);
     hbase->GetYaxis()->SetRangeUser(0, 300);
     if (signame == "2b2t" && m1 != "40") hbase->GetYaxis()->SetRangeUser(0, 80);
-    if (signame == "2b2t" && year=="allyears") hbase->GetYaxis()->SetRangeUser(0, 30);
-    if (signame == "2b2t" && year=="allyears" && m1 == "40") hbase->GetYaxis()->SetRangeUser(0, 80);
-    //if (signame == "4b2t" && year=="allyears" && m1 == "30") hbase->GetYaxis()->SetRangeUser(0, 500);
-    if (ch != "allchannels") hbase->GetYaxis()->SetRangeUser(0, 1500);
-//    if (signame == "2b2t") hbase->GetYaxis()->SetRangeUser(0, 100);
-//    if (signame == "4b2t") hbase->GetYaxis()->SetRangeUser(0, 500);
+    if (signame == "2b2t" ) hbase->GetYaxis()->SetRangeUser(0, 30);
+    if (signame == "2b2t"  && m1 == "40") hbase->GetYaxis()->SetRangeUser(0, 80);
     hbase->GetYaxis()->SetMaxDigits(6);
 
     //make plot
@@ -344,7 +301,7 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     if(year=="allyears"){
       lumi = 138000;
     }
-    // e.g. plotLimit_2018_a1a2_2b2t_m1_30_mutau.png/.pdf
+
     Plot plot("plotLimit_"+year+"_a1a2_"+signame+"_m1_"+m1+"_"+ch,lumi,false,false);
     plot.Initialize(hbase);
     plot.SetLegend(leg);
@@ -362,12 +319,11 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     if (showObserved) {
         g_obs->Draw("pL same");
     }
-    //g_xsec->Draw("C same");
 
     plot.GetHisto()->Draw("sameaxis"); //draw again so axes on top
     plot.DrawText();
     pave->Draw("same");
-    //print image
+    gPad->RedrawAxis();
     std::string title = plot.GetName();
     if (showObserved) {
         title += "_unblinded";

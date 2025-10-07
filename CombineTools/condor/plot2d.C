@@ -3,7 +3,7 @@
 #include <string>
 #include <list>
 
-void plot2d()
+void plot2d(string ch)
 {
 
   TCanvas *c1 = new TCanvas("c1","c1",0,0,600,600);
@@ -31,15 +31,16 @@ void plot2d()
   hist->GetYaxis()->CenterTitle();
   hist->GetYaxis()->SetTitleOffset(1.25);
 
-  hist->GetZaxis()->SetTitle("95% CL upper limit on B(H#rightarrow a_{1} a_{2} #rightarrow4#tau2b/2#tau2b) (%)");
+  hist->GetZaxis()->SetTitle("95% CL upper limit on #sigma(H#rightarrow a_{1} a_{2} #rightarrow2#tau4b/2#tau2b) (pb)");
   hist->GetZaxis()->CenterTitle();  // Optional: Center the title
   hist->GetZaxis()->SetTitleOffset(1.4);  // Adjust to push the title to the right
   hist->GetZaxis()->SetTitleSize(0.04);
   hist->GetZaxis()->SetLabelSize(0.035);
-  hist->SetMaximum(100.);
+  hist->SetMaximum(200.);
+  if (ch == "allchannels") { hist->SetMaximum(40.); }
 
   fstream file;
-  file.open("median_limits.txt", ios::in);
+  file.open("median_limits_"+ch+".txt", ios::in);
 
   while(1)
   {
@@ -50,12 +51,28 @@ void plot2d()
 
   }
 
+  string channel;
+  if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
+  else if (ch == "etau") { channel = "e#tau_{h} channel"; }
+  else if (ch == "emu") { channel = "e#mu channel"; }
+  else if (ch == "allchannels") { channel = "Combined"; }
+  TPaveText* pave = new TPaveText(0.57,0.74,0.75,0.85,"NDC");
+  pave->SetFillColor(0);
+  pave->SetBorderSize(0);
+  pave->SetTextSize(0.04);
+  pave->SetTextFont(42);
+  pave->SetTextAlign(12);
+  pave->AddText(channel.c_str());
+
   file.close();
 
   hist->SetStats(0);
   hist->Draw("COLZ");
   hist->Draw("TEXT45 same");
-  c1->SaveAs("/eos/user/p/pdas/www/Ha1a2/limits/210825/plotLimit_2d.png");
-  c1->SaveAs("/eos/user/p/pdas/www/Ha1a2/limits/210825/plotLimit_2d.pdf");
+  pave->Draw("same");
+  c1->RedrawAxis();
+  std::string title = "plotLimit_2d_"+ch;
+  c1->SaveAs((title+".png").c_str(),"png");
+  c1->SaveAs((title+".pdf").c_str(),"pdf");
 }
 

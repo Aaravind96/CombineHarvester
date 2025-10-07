@@ -1,15 +1,16 @@
 import os
 
-plotdir = "/eos/user/p/pdas/www/Ha1a2/limits/210825/"
+plotdir = "/eos/user/p/pdas/www/Ha1a2/limits/270925_bdt/"
 
 # false for expected limits only, true for expected and observed
-showObserved = "false"
+showObserved = "true"
 
-#channels = ["mutau" , "etau", "emu"]
-channels = ["allchannels"]
+channels = ["allchannels", "mutau", "etau", "emu"]
 years = ["allyears"]
 for year in years:
     for channel in channels:
+        os.system(f'rm median_limits_{channel}.txt')
+        os.system(f'touch median_limits_{channel}.txt')
         ### Cascade ###
         os.system(
             f'root -l -b -q \'plotLimitsAsymm.cpp("higgsCombine_a1a2_4b2t_{channel}_{year}_m1_15.root", "4b2t", "{year}", "{channel}", "15", 2, {showObserved})\''
@@ -35,6 +36,10 @@ for year in years:
         )
         os.system(
             f'root -l -b -q \'plotLimitsAsymm.cpp("higgsCombine_a1a2_2b2t_{channel}_{year}_m1_50.root", "2b2t", "{year}", "{channel}", "50", 2, {showObserved})\''
+        )
+        ### 2D limits ###
+        os.system(
+            f'root -l -b -q \'plot2d.C("{channel}")\''
         )
 
         os.system(f"cp plotLimit_*{channel}*.png {plotdir}")
