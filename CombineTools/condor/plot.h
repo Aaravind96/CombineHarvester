@@ -74,8 +74,8 @@ class Plot {
             pad1->Draw();
 
             FormatHist(histo);
-            SetTitleOffset(histo->GetXaxis());
-            SetTitleOffset(histo->GetYaxis());
+            //SetTitleOffset(histo->GetXaxis());
+            //SetTitleOffset(histo->GetYaxis());
 
             InitializePaves();
 
@@ -117,12 +117,12 @@ class Plot {
             //setup prelim text
             //todo: add option to enable/disable/change
             double sizePextra = sizeP - 3; //smaller
-            string prelim_text = " Work in progress ";
+            string prelim_text = "Preliminary";
             TLatex width_test_extra(0,0,prelim_text.c_str());
             width_test_extra.SetTextSize(sizePextra/pad1H);
             double uminExtra = umaxCMS;
             double umaxExtra = uminExtra + width_test_extra.GetXsize();
-            paveExtra = new TPaveText(uminExtra+cmsoffset,posP,umaxExtra+cmsoffset,1.0,"NDC");
+            paveExtra = new TPaveText(uminExtra+cmsoffset,0.945,umaxExtra+cmsoffset,1.0,"NDC");
             paveExtra->SetFillColor(0);
             paveExtra->SetBorderSize(0);
             paveExtra->SetTextFont(52);
