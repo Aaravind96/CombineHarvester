@@ -1,5 +1,4 @@
 universe = vanilla
-x509userproxy = $ENV(X509_USER_PROXY)
 getenv = True
 +JobFlavour = "tomorrow"
 Executable = Job_template.sh
