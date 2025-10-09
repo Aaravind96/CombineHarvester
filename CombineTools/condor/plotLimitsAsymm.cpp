@@ -185,7 +185,7 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     double pavey2 = 0.9;
     double pavey1 = pavey2-legsize*4;
     TPaveText* pave = new TPaveText(pavex1,pavey1,pavex2,pavey2,"NDC");
-    pave->SetFillColor(0);
+    pave->SetFillColorAlpha(0, 0);
     pave->SetBorderSize(0);
     pave->SetTextSize(legsize);
     pave->SetTextFont(42);
@@ -277,10 +277,11 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     hbase->GetYaxis()->SetTitleOffset(1.7);
     hbase->GetXaxis()->SetTitle(xname.c_str());
     hbase->GetXaxis()->SetTitleOffset(1.2);
-    hbase->GetYaxis()->SetRangeUser(0, 300);
-    if (signame == "2b2t" && m1 != "40") hbase->GetYaxis()->SetRangeUser(0, 80);
-    if (signame == "2b2t" ) hbase->GetYaxis()->SetRangeUser(0, 30);
-    if (signame == "2b2t"  && m1 == "40") hbase->GetYaxis()->SetRangeUser(0, 80);
+    hbase->GetYaxis()->SetRangeUser(0, 600);
+    if (signame == "4b2t" && ch == "allchannels") hbase->GetYaxis()->SetRangeUser(0, 300);
+    if (signame == "2b2t") hbase->GetYaxis()->SetRangeUser(0, 100);
+    if (signame == "2b2t" && ch == "allchannels") hbase->GetYaxis()->SetRangeUser(0, 30);
+    if (signame == "2b2t" && m1 == "40" && ch == "allchannels") hbase->GetYaxis()->SetRangeUser(0, 80);
     hbase->GetYaxis()->SetMaxDigits(6);
 
     //make plot

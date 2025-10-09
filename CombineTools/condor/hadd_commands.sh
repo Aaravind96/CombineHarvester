@@ -1,11 +1,11 @@
 hadd higgsCombine_a1a2_4b2t_allchannels_allyears_m1_15.root  4b2t_110_15/*.root 4b2t_100_15/*.root 4b2t_90_15/*.root 4b2t_80_15/*.root 4b2t_70_15/*.root 4b2t_60_15/*.root 4b2t_50_15/*.root 4b2t_40_15/*.root 4b2t_30_15/*.root
 hadd higgsCombine_a1a2_4b2t_allchannels_allyears_m1_20.root 4b2t_100_20/*.root 4b2t_90_20/*.root 4b2t_80_20/*.root 4b2t_70_20/*.root 4b2t_60_20/*.root 4b2t_50_20/*.root 4b2t_40_20/*.root
 hadd higgsCombine_a1a2_4b2t_allchannels_allyears_m1_30.root 4b2t_90_30/*.root 4b2t_80_30/*.root 4b2t_70_30/*.root 4b2t_60_30/*.root 
-hadd higgsCombine_a1a2_2b2t_allchannels_allyears_m1_15.root 2b2t_*_15/*.root
-hadd higgsCombine_a1a2_2b2t_allchannels_allyears_m1_20.root 2b2t_*_20/*.root
+hadd higgsCombine_a1a2_2b2t_allchannels_allyears_m1_15.root 2b2t_30_15/*.root 2b2t_20_15/*.root
+hadd higgsCombine_a1a2_2b2t_allchannels_allyears_m1_20.root 2b2t_40_20/*.root 2b2t_30_20/*.root
 hadd higgsCombine_a1a2_2b2t_allchannels_allyears_m1_30.root 2b2t_60_30/*.root 2b2t_50_30/*.root 2b2t_40_30/*.root
 hadd higgsCombine_a1a2_2b2t_allchannels_allyears_m1_40.root 2b2t_80_40/*.root 2b2t_70_40/*.root 2b2t_60_40/*.root 2b2t_50_40/*.root
-hadd higgsCombine_a1a2_2b2t_allchannels_allyears_m1_50.root 2b2t_*_50/*.root
+hadd higgsCombine_a1a2_2b2t_allchannels_allyears_m1_50.root 2b2t_70_50/*.root 2b2t_60_50/*.root
 hadd higgsCombine_a1a2_4b2t_mutau_allyears_m1_15.root  4b2t_mutau_110_15/*.root 4b2t_mutau_100_15/*.root 4b2t_mutau_90_15/*.root 4b2t_mutau_80_15/*.root 4b2t_mutau_70_15/*.root 4b2t_mutau_60_15/*.root 4b2t_mutau_50_15/*.root 4b2t_mutau_40_15/*.root 4b2t_mutau_30_15/*.root
 hadd higgsCombine_a1a2_4b2t_mutau_allyears_m1_20.root 4b2t_mutau_100_20/*.root 4b2t_mutau_90_20/*.root 4b2t_mutau_80_20/*.root 4b2t_mutau_70_20/*.root 4b2t_mutau_60_20/*.root 4b2t_mutau_50_20/*.root 4b2t_mutau_40_20/*.root
 hadd higgsCombine_a1a2_4b2t_mutau_allyears_m1_30.root 4b2t_mutau_90_30/*.root 4b2t_mutau_80_30/*.root 4b2t_mutau_70_30/*.root 4b2t_mutau_60_30/*.root
