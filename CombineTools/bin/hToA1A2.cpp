@@ -78,6 +78,31 @@ void addshapes(ch::CombineHarvester* cb, TFile* input_file, vector<pair<int,stri
   }
 }
 
+void addfakenorm(ch::CombineHarvester* cb, vector<pair<int,string>> categories, string fakeProcName, string channel_abbrv, string year) {
+  for (auto categories_itn = categories.begin(); categories_itn != categories.end(); ++categories_itn) {
+    string category_name = categories_itn->second;// ch::Categories is of the type vector<pair<int, string>>
+    if (category_name == "SR1_1b" || category_name == "SR2_1b") {
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR12_1b_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+    }
+    else if (category_name == "SR3_1b" || category_name == "SR4_1b") {
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR34_1b_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+    }
+    else if (category_name == "SR1_2b" || category_name == "SR2_2b") {
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR12_2b_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+    }
+    else if (category_name == "lowMassSR") {
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_lowMassSR_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+    }
+    else if (category_name == "mediumMassSR") {
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_mediumMassSR_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+    }
+    else if (category_name == "highMassSR") {
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_highMassSR_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+    }
+    else cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_CR_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+  }
+}
+
 int main(int argc, char** argv) {
     
   std::string channel = *(argv + 1);
@@ -207,7 +232,7 @@ int main(int argc, char** argv) {
     // eleID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_eleID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_eleID_13TeV", "lnN", SystMap<>::init(1.01732));
-    cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
+    //cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
   }
     
   if (channel=="mutau"){
@@ -215,8 +240,11 @@ int main(int argc, char** argv) {
     // muID 50% correlated with MC
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.01));
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
-    cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
+    //cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
   }
+
+  // Add category dependent fake normalization uncertainty
+  if (channel=="etau" or channel=="mutau") addfakenorm(&cb, cats, fakeProcName, channel_abbrv, year); 
     
   // // =========================== Shape uncertainties ===========================
   // // The AddSyst method supports {$BIN, $PROCESS, $MASS, $ERA, $CHANNEL, $ANALYSIS}
