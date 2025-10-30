@@ -1,11 +1,13 @@
 universe = vanilla
 getenv = True
+proxy_filename  = /afs/cern.ch/user/a/aaravind/private/x509up_file
 +JobFlavour = "tomorrow"
 Executable = Job_template.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
 transfer_input_files = Job_template.sh
 notification = never
+arguments = $(proxy_filename)
 Output = output/template.out
 Error = error/template.error
 Log = log/template.log
