@@ -91,8 +91,18 @@ void getRange(int n, double* arr, double& ymin, double& ymax){
 }
 
 // usage:
+<<<<<<< HEAD
 // root -l -b -q 'plotLimitsAsymm.C+("cascade/higgsCombine_a1a2_4b2t_2018_mutau_m1_15.root", "4b2t", "2018", "mutau", "15", 2, false)
 void plotLimitsAsymm(string infile, string signame, string year, string ch, string m1, int nsigma=0, bool showObserved=false){
+=======
+// infile : input ROOT file path
+// sigtype: 4b2t (cascade) or 2b2t (non-cascade)
+// year: 2018, 2017, or 2016
+// channel: mutau, etau, or emu
+// m1: mass of a_1
+// root -l 'plotLimitsAsymm.C+("cascade/higgsCombine_a1a2_4b2t_2018_mutau_m1_15.root", "4b2t", "2018", "mutau", "15", 2, false)
+void plotLimitsAsymm(std::string infile, std::string signame, std::string year, std::string ch, std::string m1, int nsigma=0, bool showObserved=false){
+>>>>>>> f5fb468 (get limits for htoAA with BDT categories)
     //cross section values
     vector<double> masses = {};
     vector<double> xsecs = {};

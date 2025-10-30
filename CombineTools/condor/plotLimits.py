@@ -1,6 +1,10 @@
 import os
 
+<<<<<<< HEAD
 plotdir = "/eos/user/p/pdas/www/Ha1a2/limits/270925_bdt/"
+=======
+plotdir = "/eos/user/a/aaravind/www/Ha1a2/limits/290825/"
+>>>>>>> f5fb468 (get limits for htoAA with BDT categories)
 
 # false for expected limits only, true for expected and observed
 showObserved = "true"
