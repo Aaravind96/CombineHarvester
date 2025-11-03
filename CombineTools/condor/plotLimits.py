@@ -1,6 +1,6 @@
 import os
 
-plotdir = "/eos/user/p/pdas/www/Ha1a2/limits/270925_bdt/"
+plotdir = "/eos/user/p/pdas/www/Ha1a2/limits/291025/"
 
 # false for expected limits only, true for expected and observed
 showObserved = "true"

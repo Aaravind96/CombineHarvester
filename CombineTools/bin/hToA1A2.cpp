@@ -82,16 +82,16 @@ void addfakenorm(ch::CombineHarvester* cb, vector<pair<int,string>> categories, 
   for (auto categories_itn = categories.begin(); categories_itn != categories.end(); ++categories_itn) {
     string category_name = categories_itn->second;// ch::Categories is of the type vector<pair<int, string>>
     if (category_name == "SR1_1b" || category_name == "SR2_1b") {
-      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR12_1b_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR12_1b_"+year, "lnN", ch::syst::SystMap<>::init(1.30));
     }
     else if (category_name == "SR3_1b" || category_name == "SR4_1b") {
       cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR34_1b_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
     }
     else if (category_name == "SR1_2b" || category_name == "SR2_2b") {
-      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR12_2b_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR12_2b_"+year, "lnN", ch::syst::SystMap<>::init(1.30));
     }
     else if (category_name == "lowMassSR") {
-      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_lowMassSR_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_lowMassSR_"+year, "lnN", ch::syst::SystMap<>::init(1.30));
     }
     else if (category_name == "mediumMassSR") {
       cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_mediumMassSR_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
@@ -182,8 +182,8 @@ int main(int argc, char** argv) {
   // The AddSyst method supports {$BIN, $PROCESS, $MASS, $ERA, $CHANNEL, $ANALYSIS}
   cb.cp().process({"ggh_htt","qqh_htt","Zh_htt","Wh_htt"}).AddSyst(cb, "BR_htt", "lnN", SystMap<>::init(1.018));
   cb.cp().process({"ggh_hww","qqh_hww","Zh_hww","Wh_hww"}).AddSyst(cb, "BR_hww", "lnN", SystMap<>::init(1.015));
-  cb.cp().process(JoinStr({{"ggh_htt","ggh_hww"},sig_ggh})).AddSyst(cb, "pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
-  cb.cp().process(JoinStr({{"qqh_htt","qqh_hww"},sig_vbf})).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.021));
+  cb.cp().process({"ggh_htt","ggh_hww"}).AddSyst(cb, "pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
+  cb.cp().process({"qqh_htt","qqh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.021));
   cb.cp().process({"Wh_htt","Wh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.019));
   cb.cp().process({"Zh_htt","Zh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.013));
   cb.cp().process({"tth"}).AddSyst(cb, "pdf_Higgs_ttH", "lnN", SystMap<>::init(1.036));

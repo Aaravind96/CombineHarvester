@@ -36,8 +36,9 @@ void plot2d(string ch)
   hist->GetZaxis()->SetTitleOffset(1.4);  // Adjust to push the title to the right
   hist->GetZaxis()->SetTitleSize(0.04);
   hist->GetZaxis()->SetLabelSize(0.035);
-  hist->SetMaximum(200.);
-  if (ch == "allchannels") { hist->SetMaximum(40.); }
+  hist->SetMaximum(100.);
+  if (ch == "allchannels") { hist->SetMaximum(60.); }
+  if (ch == "etau") { hist->SetMaximum(500.); }
 
   fstream file;
   file.open("median_limits_"+ch+".txt", ios::in);
