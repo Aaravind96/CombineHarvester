@@ -84,13 +84,19 @@ void addfakenorm(ch::CombineHarvester* cb, vector<pair<int,string>> categories, 
     if (category_name == "SR1_1b" || category_name == "SR2_1b") {
       cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR12_1b_"+year, "lnN", ch::syst::SystMap<>::init(1.30));
     }
-    else if (category_name == "SR3_1b" || category_name == "SR4_1b") {
+    else if ((category_name == "SR3_1b" || category_name == "SR4_1b") && channel_abbrv == "mt") {
       cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR34_1b_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+    }
+    else if ((category_name == "SR3_1b" || category_name == "SR4_1b") && channel_abbrv == "et") {
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR34_1b_"+year, "lnN", ch::syst::SystMap<>::init(1.30));
     }
     else if (category_name == "SR1_2b" || category_name == "SR2_2b") {
       cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_SR12_2b_"+year, "lnN", ch::syst::SystMap<>::init(1.30));
     }
-    else if (category_name == "lowMassSR") {
+    else if (category_name == "lowMassSR" && channel_abbrv == "mt") {
+      cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_lowMassSR_"+year, "lnN", ch::syst::SystMap<>::init(1.20));
+    }
+    else if (category_name == "lowMassSR" && channel_abbrv == "et") {
       cb->cp().bin({category_name}).process({fakeProcName}).AddSyst(*cb, "CMS_NPS25003_normalization_fake_"+channel_abbrv+"_lowMassSR_"+year, "lnN", ch::syst::SystMap<>::init(1.30));
     }
     else if (category_name == "mediumMassSR") {
