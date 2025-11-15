@@ -60,10 +60,10 @@ for channel in channels:
 
             os.system(f'combineCards.py {ch1_filename} {ch2_filename} {ch3_filename} > {allch_filename}')
 
-            # Convert text file to workspace
-            os.system(f'text2workspace.py "{allch_filename}" -m {masspoint[0]}')
-
-
+#            # Convert text file to workspace
+#            os.system(f'text2workspace.py "{allch_filename}" -m {masspoint[0]}')
+#
+#
 #            allch_workspace_rootfile = f"asymmCards/hToA1A2_{signalType}_{channel}_{year}_{masspoint[0]}_{masspoint[1]}.root"
 #            logfile = f"asymmCards/limits_{signalType}_{channel}_{year}_{masspoint[0]}_{masspoint[1]}"
 #            if (doBlindedLimits):  # -t -1 option

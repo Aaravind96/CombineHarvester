@@ -43,10 +43,10 @@ for massList in allMasses[signalType]:
         # Note the multi-line command, we need to cd into asymmCards/ to run combineCards.py, otherwise the .txt file will try to look for a double-nested folder asymmCards/asymmCards/ which does not exist
         os.system(f'cd asymmCards/; combineCards.py hToA1A2_{signalType}_mutau_{year}_{masspoint[0]}_{masspoint[1]}.txt  hToA1A2_{signalType}_etau_{year}_{masspoint[0]}_{masspoint[1]}.txt hToA1A2_{signalType}_emu_{year}_{masspoint[0]}_{masspoint[1]}.txt > hToA1A2_{signalType}_allchannels_{year}_{masspoint[0]}_{masspoint[1]}.txt; cd ../')
 
-        # Convert text to workspace
-        print(f"Converting .txt to workspace....")
-        os.system(f'text2workspace.py asymmCards/hToA1A2_{signalType}_allchannels_{year}_{masspoint[0]}_{masspoint[1]}.txt -m {masspoint[0]}')
-
+#        # Convert text to workspace
+#        print(f"Converting .txt to workspace....")
+#        os.system(f'text2workspace.py asymmCards/hToA1A2_{signalType}_allchannels_{year}_{masspoint[0]}_{masspoint[1]}.txt -m {masspoint[0]}')
+#
 #    for masspoint in massList:
 #        print(f"Creating higgsCombineTest.AsymptoticLimits.*.root....")
 #        if (doBlindedLimits):  # -t -1 option
