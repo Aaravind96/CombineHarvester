@@ -13,6 +13,7 @@ void plot2d(string ch)
   c1->GetFrame()->SetBorderMode(-1);
   c1->SetRightMargin(0.2);
   gStyle->SetPalette(kLightTemperature);
+  gStyle->SetPaintTextFormat("4.1f");
 
   float m1values[6] = {12.5, 17.5, 25, 35, 45, 55};
   float m2values[11] = {15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115};
@@ -24,12 +25,14 @@ void plot2d(string ch)
 
 
   hist->GetXaxis()->SetTitle("m_{a_{1}} [GeV]");
+  hist->GetXaxis()->SetTitleSize(0.04);
   hist->GetXaxis()->CenterTitle();
-  hist->GetXaxis()->SetTitleOffset(1.2);
+  hist->GetXaxis()->SetTitleOffset(1.1);
 
   hist->GetYaxis()->SetTitle("m_{a_{2}} [GeV]");
+  hist->GetYaxis()->SetTitleSize(0.04);
   hist->GetYaxis()->CenterTitle();
-  hist->GetYaxis()->SetTitleOffset(1.25);
+  hist->GetYaxis()->SetTitleOffset(1.2);
 
   hist->GetZaxis()->SetTitle("95% CL upper limit on #sigma(H#rightarrow a_{1} a_{2} #rightarrow2#tau4b/2#tau2b) (pb)");
   hist->GetZaxis()->CenterTitle();  // Optional: Center the title
@@ -52,25 +55,33 @@ void plot2d(string ch)
 
   }
 
+  TLatex* text = new TLatex(0.585, 0.91, "138 fb^{-1} (13 TeV)");
+  text->SetNDC();
+  text->SetTextSize(0.04);
+  text->SetTextFont(42);
+
   string channel;
   if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
   else if (ch == "etau") { channel = "e#tau_{h} channel"; }
   else if (ch == "emu") { channel = "e#mu channel"; }
   else if (ch == "allchannels") { channel = "Combined"; }
-  TPaveText* pave = new TPaveText(0.57,0.74,0.75,0.85,"NDC");
+  TPaveText* pave = new TPaveText(0.5,0.78,0.75,0.88,"NDC");
   pave->SetFillColor(0);
   pave->SetBorderSize(0);
-  pave->SetTextSize(0.04);
+  pave->SetTextSize(0.042);
   pave->SetTextFont(42);
   pave->SetTextAlign(12);
+  pave->AddText("#bf{CMS} #it{Preliminary}");
   pave->AddText(channel.c_str());
 
   file.close();
 
   hist->SetStats(0);
+  hist->SetMarkerSize(1.5);
   hist->Draw("COLZ");
   hist->Draw("TEXT45 same");
   pave->Draw("same");
+  text->Draw("same");
   c1->RedrawAxis();
   std::string title = "plotLimit_2d_"+ch;
   c1->SaveAs((title+".png").c_str(),"png");

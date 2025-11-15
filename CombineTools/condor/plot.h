@@ -112,7 +112,7 @@ class Plot {
             paveCMS->SetBorderSize(0);
             paveCMS->SetTextFont(61);
             paveCMS->SetTextSize(sizeP/pad1H);
-            paveCMS->AddText("CMS");
+            //paveCMS->AddText("CMS");
 
             //setup prelim text
             //todo: add option to enable/disable/change
@@ -127,13 +127,13 @@ class Plot {
             paveExtra->SetBorderSize(0);
             paveExtra->SetTextFont(52);
             paveExtra->SetTextSize(sizePextra/pad1H);
-            paveExtra->AddText(prelim_text.c_str());
+            //paveExtra->AddText(prelim_text.c_str());
 
             //setup lumi text
             string luminormunit = "fbinv";
             stringstream fbname_;
-            if(luminormunit=="fbinv") fbname_ << fixed << setprecision(1) << intlumi/1000 << " fb^{-1} (13 TeV)";
-            else if(luminormunit=="pbinv") fbname_ << fixed << setprecision(1) << intlumi << " pb^{-1} (13 TeV)";
+            if(luminormunit=="fbinv") fbname_ << fixed << setprecision(0) << intlumi/1000 << " fb^{-1} (13 TeV)";
+            else if(luminormunit=="pbinv") fbname_ << fixed << setprecision(0) << intlumi << " pb^{-1} (13 TeV)";
             string fbname = fbname_.str();
             TLatex width_test_lumi(0,0,fbname.c_str());
             width_test_lumi.SetTextSize(sizeP/pad1H);

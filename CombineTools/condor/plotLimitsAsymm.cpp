@@ -182,14 +182,15 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     //initialize pave
     double pavex1 = 0.17;
     double pavex2 = 0.45;
-    double pavey2 = 0.9;
-    double pavey1 = pavey2-legsize*4;
+    double pavey2 = 0.93;
+    double pavey1 = 0.7;
     TPaveText* pave = new TPaveText(pavex1,pavey1,pavex2,pavey2,"NDC");
     pave->SetFillColorAlpha(0, 0);
     pave->SetBorderSize(0);
     pave->SetTextSize(legsize);
     pave->SetTextFont(42);
     pave->SetTextAlign(12);
+    pave->AddText("#bf{CMS} #it{Preliminary}");
     pave->AddText(process.c_str());
     pave->AddText(channel.c_str());
     pave->AddText(description.c_str());
@@ -326,8 +327,8 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     pave->Draw("same");
     gPad->RedrawAxis();
     std::string title = plot.GetName();
-    if (showObserved) {
-        title += "_unblinded";
+    if (!showObserved) {
+        title += "_blinded";
     }
     can->Print((title+".png").c_str(),"png");
     can->Print((title+".pdf").c_str(),"pdf");
