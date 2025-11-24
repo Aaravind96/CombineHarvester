@@ -147,15 +147,16 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
         return;
     }
     //setup plotting options
-    string process, yname, xname, channel, description;
+    //string process, yname, xname, channel, description;
+    string yname, xname, channel, description;
 
     if (signame == "4b2t") {
-        process = "h #rightarrow a_{1} a_{2} #rightarrow 2#tau4b";
-        yname = "B(H#rightarrow a_{1} a_{2} #rightarrow 2#tau4b) (\%)";
+        //process = "h #rightarrow h_{1} h_{2} #rightarrow 2#tau4b";
+        yname = "B(H#rightarrow h_{1} h_{2} #rightarrow 2#tau4b) (\%)";
     }
     else if (signame == "2b2t") {
-        process = "h #rightarrow a_{1} a_{2} #rightarrow 2#tau2b";
-        yname = "B(H#rightarrow a_{1} a_{2} #rightarrow 2#tau2b) (\%)";
+        //process = "h #rightarrow h_{1} h_{2} #rightarrow 2#tau2b";
+        yname = "B(H#rightarrow h_{1} h_{2} #rightarrow 2#tau2b) (\%)";
     }
 
     if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
@@ -163,8 +164,8 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     else if (ch == "emu") { channel = "e#mu channel"; }
     else if (ch == "allchannels") { channel = "Combined"; }
 
-    xname = "m_{a_{2}} [GeV]";
-    description = "m_{a_{1}} = " + m1 + " GeV";
+    xname = "m_{h_{2}} [GeV]";
+    description = "m_{h_{1}} = " + m1 + " GeV";
 
     //initialize legend
     double legsize = 0.04;
@@ -191,7 +192,7 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     pave->SetTextFont(42);
     pave->SetTextAlign(12);
     pave->AddText("#bf{CMS} #it{Preliminary}");
-    pave->AddText(process.c_str());
+    //pave->AddText(process.c_str());
     pave->AddText(channel.c_str());
     pave->AddText(description.c_str());
 

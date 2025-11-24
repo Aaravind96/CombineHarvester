@@ -24,17 +24,17 @@ void plot2d(string ch)
   double z;
 
 
-  hist->GetXaxis()->SetTitle("m_{a_{1}} [GeV]");
+  hist->GetXaxis()->SetTitle("m_{h_{1}} [GeV]");
   hist->GetXaxis()->SetTitleSize(0.04);
   hist->GetXaxis()->CenterTitle();
   hist->GetXaxis()->SetTitleOffset(1.1);
 
-  hist->GetYaxis()->SetTitle("m_{a_{2}} [GeV]");
+  hist->GetYaxis()->SetTitle("m_{h_{2}} [GeV]");
   hist->GetYaxis()->SetTitleSize(0.04);
   hist->GetYaxis()->CenterTitle();
   hist->GetYaxis()->SetTitleOffset(1.2);
 
-  hist->GetZaxis()->SetTitle("95% CL upper limit on #sigma(H#rightarrow a_{1} a_{2} #rightarrow2#tau4b/2#tau2b) (pb)");
+  hist->GetZaxis()->SetTitle("95% CL upper limit on #sigma(H#rightarrow h_{1} h_{2} #rightarrow2#tau4b/2#tau2b) (pb)");
   hist->GetZaxis()->CenterTitle();  // Optional: Center the title
   hist->GetZaxis()->SetTitleOffset(1.4);  // Adjust to push the title to the right
   hist->GetZaxis()->SetTitleSize(0.04);
