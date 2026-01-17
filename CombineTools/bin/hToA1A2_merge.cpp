@@ -11,6 +11,8 @@
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
 #include "CombineHarvester/CombineTools/interface/Systematics.h"
 #include "CombineHarvester/CombineTools/interface/BinByBin.h"
+#include "TKey.h"
+#include "TClass.h"
 
 using namespace std;
 
@@ -29,6 +31,7 @@ void addshapes(ch::CombineHarvester* cb, TFile* input_file, vector<pair<int,stri
     // Loop over the given processes
     for (auto proc_names_itn = proc_names.begin(); proc_names_itn != proc_names.end(); ++proc_names_itn) {
       string proc_var = *proc_names_itn;
+      if (proc_var == "others") continue;
       TH1F* shapeBase = (TH1F*) dir->Get(proc_var.c_str());
       TH1F* shapeUp = (TH1F*) dir->Get((proc_var + "_" + syst_name + "Up").c_str());
       TH1F* shapeDown = (TH1F*) dir->Get((proc_var + "_" + syst_name + "Down").c_str());
@@ -53,28 +56,115 @@ void addshapes(ch::CombineHarvester* cb, TFile* input_file, vector<pair<int,stri
       shapeBase_norm = shapeBase->Integral();
       shapeUp_norm = shapeUp->Integral();
       shapeDown_norm = shapeDown->Integral();
+      bool HasPositiveNorms = shapeBase_norm > 0.005 and shapeUp_norm > 0.0 and shapeDown_norm > 0.0;            
+      if (HasPositiveNorms) {
+        cb->cp().bin({category_name}).process({*proc_names_itn}).AddSyst(*cb, syst_name, "shape", ch::syst::SystMap<>::init(init_value));
+      }
+      else {
+        cout << "Skipping shape with non-positive norms: " << syst_name << " for process " << *proc_names_itn << " in category " << category_name << endl;
+      }
+    }
+  }
+}
+
+void addothershapes(ch::CombineHarvester* cb, TFile* input_file, TFile* output_file, vector<pair<int,string>> categories, vector<string> proc_names, string syst_name, float init_value) {
+  // Loop over categories
+  for (auto categories_itn = categories.begin(); categories_itn != categories.end(); ++categories_itn) {
+    string category_name = categories_itn->second;
+    TDirectory* dir = (TDirectory*) input_file->Get(category_name.c_str());
+    if (dir == nullptr) {
+      cout << "Warning: category " << category_name << " missing in file!" << endl;
+      throw;
+    }
+    TDirectory* outdir = output_file->GetDirectory(category_name.c_str());
+    if (!outdir) {
+      outdir = output_file->mkdir(category_name.c_str());
+    }
+    outdir->cd();
+
+    TH1F* otherBase = (TH1F*)outdir->Get("others");
+    bool nominalPresent = otherBase;
+    if (!otherBase) {
+        otherBase = new TH1F("others", "others", 10, 10, 110);
+        otherBase->SetDirectory(outdir);
+    }
+    
+    string upname = "others_" + syst_name + "Up";
+    string downname = "others_" + syst_name + "Down";
+    
+    TH1F* otherUp = (TH1F*)outdir->Get(upname.c_str());
+    if (!otherUp) {
+        otherUp = new TH1F(upname.c_str(), upname.c_str(), 10, 10, 110);
+        otherUp->SetDirectory(outdir);
+    }
+    
+    TH1F* otherDown = (TH1F*)outdir->Get(downname.c_str());
+    if (!otherDown) {
+        otherDown = new TH1F(downname.c_str(), downname.c_str(), 10, 10, 110);
+        otherDown->SetDirectory(outdir);
+    }
+
+    if (!otherUp && !otherDown) continue;
+
+    // Loop over the given processes
+    for (auto proc_names_itn = proc_names.begin(); proc_names_itn != proc_names.end(); ++proc_names_itn) {
+      string proc_var = *proc_names_itn;
+      TH1F* shapeBase = (TH1F*) dir->Get(proc_var.c_str());
+      TH1F* shapeUp = (TH1F*) dir->Get((proc_var + "_" + syst_name + "Up").c_str());
+      TH1F* shapeDown = (TH1F*) dir->Get((proc_var + "_" + syst_name + "Down").c_str());
+      // Check if each of the given processes has at least the shape templates in file
+      // They could be invalid for use but must be there if passed in argument
+      if (shapeBase == nullptr) {
+        cout << "Warning: the nominal process shape " << proc_var << " in category " << category_name << " does not exist!" << endl;
+        throw;
+      }
+      if (shapeUp == nullptr) {
+        cout << "Warning: the Up shape " << proc_var << "_" << syst_name << "Up" << " in category " << category_name << " does not exist! Cloning Base!" << endl;
+        shapeUp = (TH1F*)shapeBase->Clone();
+      }
+      if (shapeDown == nullptr) {
+        cout << "Warning: the Down shape " << proc_var << "_" << syst_name << "Down" << " in category " << category_name << " does not exist! Cloning Base!" << endl;
+        shapeDown = (TH1F*)shapeBase->Clone();
+      }
+
+      // Manually Clone base shape even if variations exist for these combinations
+      if (syst_name.find("CMS_met_") != std::string::npos && (proc_var == "ST" || proc_var == "VV" || proc_var == "Zh_htt" || proc_var == "Zh_hww" || proc_var == "Wh_htt" || proc_var == "Wh_hww" || proc_var == "tth")) {
+        shapeUp = (TH1F*)shapeBase->Clone();
+        shapeDown = (TH1F*)shapeBase->Clone();	
+      }
+      if (syst_name.find("CMS_UES_") != std::string::npos && (proc_var == "ZJ" || proc_var == "WJ" || proc_var == "ggh_htt" || proc_var == "qqh_htt" || proc_var == "ggh_hww" || proc_var == "qqh_hww")) {
+        shapeUp = (TH1F*)shapeBase->Clone();
+	shapeDown = (TH1F*)shapeBase->Clone();
+      }
+      if (syst_name.find("CMS_Zpt_") != std::string::npos && (proc_var != "ZJ")) {
+        shapeUp = (TH1F*)shapeBase->Clone();
+        shapeDown = (TH1F*)shapeBase->Clone();
+      }
+
+      // Check if the template shapes have positive norms
+      Float_t shapeBase_norm = 0.0;
+      Float_t shapeUp_norm = 0.0;
+      Float_t shapeDown_norm = 0.0;
+      shapeBase_norm = shapeBase->Integral();
+      shapeUp_norm = shapeUp->Integral();
+      shapeDown_norm = shapeDown->Integral();
       bool HasPositiveNorms = shapeBase_norm > 0.005 and shapeUp_norm > 0.0 and shapeDown_norm > 0.0;
-            
-      /* // Negative bins are fine except the shape looks crazy
-            // Check if the Up and Down shapes have any negative bin
-	 bool shapeUp_negativebins = false;
-      bool shapeDown_negativebins = false;
-      for (int i = 1; i <= shapeUp->GetNbinsX(); ++i) {
-      if (shapeUp->GetBinContent(i) < 0.0) shapeUp_negativebins = true;
+      if (HasPositiveNorms) {
+	if (!nominalPresent) otherBase->Add(shapeBase);
+	otherUp->Add(shapeUp);
+	otherDown->Add(shapeDown);
+      }
+      else {
+        cout << "Skipping shape with non-positive norms: " << syst_name << " for process " << *proc_names_itn << " in category " << category_name << endl;
+      }
+      cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, syst_name, "shape", ch::syst::SystMap<>::init(init_value));
+      outdir->cd();
+      if (!nominalPresent) otherBase->Write("others", TObject::kOverwrite);
+      otherUp->Write(upname.c_str(), TObject::kOverwrite);
+      otherDown->Write(downname.c_str(), TObject::kOverwrite);
+      outdir->Write("", TObject::kOverwrite);
     }
-      for (int i = 1; i <= shapeDown->GetNbinsX(); ++i) {
-      if (shapeDown->GetBinContent(i) < 0.0) shapeDown_negativebins = true;
-    }
-      bool HasNegativeBins = shapeUp_negativebins or shapeDown_negativebins;
-            */
-            
-	if (HasPositiveNorms) {
-	  cb->cp().bin({category_name}).process({*proc_names_itn}).AddSyst(*cb, syst_name, "shape", ch::syst::SystMap<>::init(init_value));
-	}
-	else {
-	  cout << "Skipping shape with non-positive norms: " << syst_name << " for process " << *proc_names_itn << " in category " << category_name << endl;
-	}
-    }
+    output_file->Write("", TObject::kOverwrite);
   }
 }
 
@@ -109,6 +199,70 @@ void addfakenorm(ch::CombineHarvester* cb, vector<pair<int,string>> categories, 
   }
 }
 
+void addothernorm(ch::CombineHarvester* cb, TFile* input_file, vector<pair<int,string>> categories) {
+  for (auto categories_itn = categories.begin(); categories_itn != categories.end(); ++categories_itn) {
+    string category_name = categories_itn->second;// ch::Categories is of the type vector<pair<int, string>>
+    TDirectory* dir = (TDirectory*) input_file->Get(category_name.c_str());
+    // sum all other process yields
+    TH1F* hist_others = (TH1F*) dir->Get("others");
+    double totyield = hist_others->Integral();
+    if (totyield == 0) continue;
+    // then sum specific processes that get the norm unc and calculate the ratio
+    // multiply ratio * norm percentage (?) to get the value
+    // e.g. if it is 20% uncertainty. 1+0.2*(rate_process/total_rate_processes)
+    double temp = 0;
+    double temp_1 = 0;
+    double temp_2 = 0;
+    TH1F* hist_ggh_htt = (TH1F*) dir->Get("ggh_htt");
+    TH1F* hist_qqh_htt = (TH1F*) dir->Get("qqh_htt");
+    TH1F* hist_Zh_htt = (TH1F*) dir->Get("Zh_htt");
+    TH1F* hist_Wh_htt = (TH1F*) dir->Get("Wh_htt");
+    TH1F* hist_ggh_hww = (TH1F*) dir->Get("ggh_hww");
+    TH1F* hist_qqh_hww = (TH1F*) dir->Get("qqh_hww");
+    TH1F* hist_Zh_hww = (TH1F*) dir->Get("Zh_hww");
+    TH1F* hist_Wh_hww = (TH1F*) dir->Get("Wh_hww");
+    TH1F* hist_tth = (TH1F*) dir->Get("tth");
+    TH1F* hist_VV = (TH1F*) dir->Get("VV");
+    TH1F* hist_ST = (TH1F*) dir->Get("ST");
+    TH1F* hist_ZJ = (TH1F*) dir->Get("ZJ");
+
+    temp = 1. + 0.018*(hist_ggh_htt->Integral()+hist_qqh_htt->Integral()+hist_Zh_htt->Integral()+hist_Wh_htt->Integral())/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "BR_htt", "lnN", ch::syst::SystMap<>::init(temp));
+
+    temp = 1. + 0.015*(hist_ggh_hww->Integral()+hist_qqh_hww->Integral()+hist_Zh_hww->Integral()+hist_Wh_hww->Integral())/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "BR_hww", "lnN", ch::syst::SystMap<>::init(temp));
+
+    temp = 1. + 0.032*(hist_ggh_htt->Integral()+hist_ggh_hww->Integral())/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "pdf_Higgs_gg", "lnN", ch::syst::SystMap<>::init(temp));
+
+    temp = 1. + 0.021*(hist_qqh_htt->Integral()+hist_qqh_hww->Integral())/totyield + 0.019*(hist_Wh_htt->Integral()+hist_Wh_hww->Integral())/totyield + 0.013*(hist_Zh_htt->Integral()+hist_Zh_hww->Integral())/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "pdf_Higgs_qqbar", "lnN", ch::syst::SystMap<>::init(temp));
+
+    temp = 1. + 0.036*hist_tth->Integral()/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "pdf_Higgs_ttH", "lnN", ch::syst::SystMap<>::init(temp));
+
+    temp = 1. + 0.039*(hist_ggh_htt->Integral()+hist_ggh_hww->Integral())/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "QCDscale_gg", "lnN", ch::syst::SystMap<>::init(temp));
+
+    temp_1 = 1 - 0.0033*(hist_qqh_htt->Integral()+hist_qqh_hww->Integral())/totyield + 0.007*(hist_Wh_htt->Integral()+hist_Wh_hww->Integral())/totyield + 0.031*(hist_Zh_htt->Integral()+hist_Zh_hww->Integral())/totyield;
+    temp_2 = 1 + 0.0043*(hist_qqh_htt->Integral()+hist_qqh_hww->Integral())/totyield + 0.005*(hist_Wh_htt->Integral()+hist_Wh_hww->Integral())/totyield + 0.038*(hist_Zh_htt->Integral()+hist_Zh_hww->Integral())/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "QCDscale_qqbar", "lnN", ch::syst::SystMapAsymm<>::init(temp_1,temp_2));
+
+    temp_1 = 1. - 0.092*hist_tth->Integral()/totyield;
+    temp_2 = 1. + 0.058*hist_tth->Integral()/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "QCDscale_ttH", "lnN", ch::syst::SystMapAsymm<>::init(temp_1,temp_2));
+
+    temp = 1. + 0.05*hist_VV->Integral()/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "cross_section_VV", "lnN", ch::syst::SystMap<>::init(temp));
+
+    temp = 1. + 0.05*hist_ST->Integral()/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "cross_section_ST", "lnN", ch::syst::SystMap<>::init(temp));
+
+    temp = 1. + 0.02*hist_ZJ->Integral()/totyield;
+    cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, "CMS_NPS25003_normalization_Z", "lnN", ch::syst::SystMap<>::init(temp));
+  }
+}
+
 int main(int argc, char** argv) {
     
   std::string channel = *(argv + 1);
@@ -129,6 +283,7 @@ int main(int argc, char** argv) {
     
   // Where the datacard is stored
   string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes" + year + "/";
+  string other_aux = string(getenv("CMSSW_BASE")) + "/src/other_aux/shapes" + year + "/";
     
   ch::CombineHarvester cb;
   // Uncomment this next line to see a *lot* of debug information
@@ -151,15 +306,15 @@ int main(int argc, char** argv) {
   }
     
   // List of backgrounds in the datacards
-  vector<string> bkg_procs = {"ttbar","ZJ","ST","VV","ggh_htt","ggh_hww","qqh_htt","qqh_hww","Zh_htt","Zh_hww","Wh_htt","Wh_hww","tth"};
-  if (channel=="emu") bkg_procs.push_back("WJ");
-    
+  vector<string> other_procs = {"ZJ","ST","VV","ggh_htt","ggh_hww","qqh_htt","qqh_hww","Zh_htt","Zh_hww","Wh_htt","Wh_hww","tth"};
+  if (channel=="emu") other_procs.push_back("WJ");
+
+  vector<string> bkg_procs = {"ttbar", "others"};
   vector<string> bkg_procs_noEMB_nofake = bkg_procs;
 
   bkg_procs.push_back("embedded");
   bkg_procs.push_back(fakeProcName);
 
-    
   cb.AddProcesses({"*"}, {"hToA1A2"}, {year}, {channel}, bkg_procs, cats, false);
     
   // List of signals in the datacards
@@ -170,7 +325,6 @@ int main(int argc, char** argv) {
   vector<string> sig_procs = {"ggh" + signalType + "-" + mass1 + "-" + mass2, "vbf" + signalType + "-" + mass1 + "-" + mass2};
 
   cb.AddProcesses({"*"}, {"hToA1A2"}, {year}, {channel}, sig_procs, cats, true);
-
 
   using ch::syst::SystMap;
   using ch::syst::SystMapAsymm;
@@ -184,25 +338,34 @@ int main(int argc, char** argv) {
   if (channel == "mutau") channel_abbrv = "mt";
   if (channel == "etau")  channel_abbrv = "et";
   if (channel == "emu")   channel_abbrv = "em";
+
+  TFile* file;
+  file = new TFile((aux_shapes+"out_"+channel+".root").c_str());// To be used for the addshapes function
+  TFile* otherfile;
+  otherfile = new TFile((other_aux+"out_"+channel+".root").c_str(),"UPDATE");
     
   // =========================== Normalization uncertainties ===========================
   // The AddSyst method supports {$BIN, $PROCESS, $MASS, $ERA, $CHANNEL, $ANALYSIS}
-  cb.cp().process({"ggh_htt","qqh_htt","Zh_htt","Wh_htt"}).AddSyst(cb, "BR_htt", "lnN", SystMap<>::init(1.018));
-  cb.cp().process({"ggh_hww","qqh_hww","Zh_hww","Wh_hww"}).AddSyst(cb, "BR_hww", "lnN", SystMap<>::init(1.015));
-  cb.cp().process({"ggh_htt","ggh_hww"}).AddSyst(cb, "pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
-  cb.cp().process({"qqh_htt","qqh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.021));
-  cb.cp().process({"Wh_htt","Wh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.019));
-  cb.cp().process({"Zh_htt","Zh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.013));
-  cb.cp().process({"tth"}).AddSyst(cb, "pdf_Higgs_ttH", "lnN", SystMap<>::init(1.036));
-  cb.cp().process({"ggh_htt","ggh_hww"}).AddSyst(cb, "QCDscale_gg", "lnN", SystMap<>::init(1.039));
-  cb.cp().process({"qqh_htt","qqh_hww"}).AddSyst(cb, "QCDscale_qqbar", "lnN", SystMapAsymm<>::init(0.9967,1.0043));
-  cb.cp().process({"Wh_htt","Wh_hww"}).AddSyst(cb, "QCDscale_qqbar", "lnN", SystMapAsymm<>::init(0.993,1.005));
-  cb.cp().process({"Zh_htt","Zh_hww"}).AddSyst(cb, "QCDscale_qqbar", "lnN", SystMapAsymm<>::init(0.969,1.038));
-  cb.cp().process({"tth"}).AddSyst(cb, "QCDscale_ttH", "lnN", SystMapAsymm<>::init( 0.908,1.058));
+  //
+  // Following are included in "others"
+  //cb.cp().process({"ggh_htt","qqh_htt","Zh_htt","Wh_htt"}).AddSyst(cb, "BR_htt", "lnN", SystMap<>::init(1.018));
+  //cb.cp().process({"ggh_hww","qqh_hww","Zh_hww","Wh_hww"}).AddSyst(cb, "BR_hww", "lnN", SystMap<>::init(1.015));
+  //cb.cp().process({"ggh_htt","ggh_hww"}).AddSyst(cb, "pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
+  //cb.cp().process({"qqh_htt","qqh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.021));
+  //cb.cp().process({"Wh_htt","Wh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.019));
+  //cb.cp().process({"Zh_htt","Zh_hww"}).AddSyst(cb, "pdf_Higgs_qqbar", "lnN", SystMap<>::init(1.013));
+  //cb.cp().process({"tth"}).AddSyst(cb, "pdf_Higgs_ttH", "lnN", SystMap<>::init(1.036));
+  //cb.cp().process({"ggh_htt","ggh_hww"}).AddSyst(cb, "QCDscale_gg", "lnN", SystMap<>::init(1.039));
+  //cb.cp().process({"qqh_htt","qqh_hww"}).AddSyst(cb, "QCDscale_qqbar", "lnN", SystMapAsymm<>::init(0.9967,1.0043));
+  //cb.cp().process({"Wh_htt","Wh_hww"}).AddSyst(cb, "QCDscale_qqbar", "lnN", SystMapAsymm<>::init(0.993,1.005));
+  //cb.cp().process({"Zh_htt","Zh_hww"}).AddSyst(cb, "QCDscale_qqbar", "lnN", SystMapAsymm<>::init(0.969,1.038));
+  //cb.cp().process({"tth"}).AddSyst(cb, "QCDscale_ttH", "lnN", SystMapAsymm<>::init(0.908,1.058));
+  //cb.cp().process({"ttbar"}).AddSyst(cb, "cross_section_ttbar", "lnN", SystMap<>::init(1.042));
+  //cb.cp().process({"VV"}).AddSyst(cb, "cross_section_VV", "lnN", SystMap<>::init(1.05));
+  //cb.cp().process({"ST"}).AddSyst(cb, "cross_section_ST", "lnN", SystMap<>::init(1.05));
+  //cb.cp().process({"ZJ"}).AddSyst(cb, "CMS_NPS25003_normalization_Z", "lnN", SystMap<>::init(1.02));
+
   cb.cp().process({"ttbar"}).AddSyst(cb, "cross_section_ttbar", "lnN", SystMap<>::init(1.042));
-  cb.cp().process({"VV"}).AddSyst(cb, "cross_section_VV", "lnN", SystMap<>::init(1.05));
-  cb.cp().process({"ST"}).AddSyst(cb, "cross_section_ST", "lnN", SystMap<>::init(1.05));
-  cb.cp().process({"ZJ"}).AddSyst(cb, "CMS_NPS25003_normalization_Z", "lnN", SystMap<>::init(1.02));
   cb.cp().process({"embedded"}).AddSyst(cb, "CMS_NPS25003_normalization_embedded", "lnN", SystMap<>::init(1.04));
   cb.cp().process(JoinStr({sig_ggh,sig_vbf})).AddSyst(cb, "CMS_NPS25003_signal_theory", "lnN", SystMap<>::init(1.036));
 
@@ -221,7 +384,7 @@ int main(int argc, char** argv) {
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).AddSyst(cb, "lumi_13TeV_correlated16-18", "lnN", SystMap<>::init(1.02));
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).AddSyst(cb, "lumi_13TeV_correlated17-18", "lnN", SystMap<>::init(1.002));
   }
-    
+
   if (channel=="emu"){
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).AddSyst(cb, "CMS_eleID_13TeV", "lnN", SystMap<>::init(1.02));
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).AddSyst(cb, "CMS_muID_13TeV", "lnN", SystMap<>::init(1.02));
@@ -233,6 +396,7 @@ int main(int argc, char** argv) {
     cb.cp().process({"embedded"}).AddSyst(cb, "CMS_EMB_muID_13TeV", "lnN", SystMap<>::init(1.01732));
     cb.cp().process({fakeProcName}).AddSyst(cb, "CMS_NPS25003_normalization_qcd_"+channel_abbrv+"_"+year, "lnN", SystMap<>::init(1.20));
   }
+
     
   if (channel=="etau"){
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).AddSyst(cb, "CMS_eleID_13TeV", "lnN", SystMap<>::init(1.02));
@@ -256,9 +420,6 @@ int main(int argc, char** argv) {
   // // =========================== Shape uncertainties ===========================
   // // The AddSyst method supports {$BIN, $PROCESS, $MASS, $ERA, $CHANNEL, $ANALYSIS}
     
-  TFile* file;
-  file = new TFile((aux_shapes+"out_"+channel+".root").c_str());// To be used for the addshapes function
-    
   // btagging efficiency, no embedded (correlated between eras: hf/lf/cferr1/cferr2, rename later)
   addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_btagsf_hf_"+year, 1.00);
   addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_btagsf_lf_"+year, 1.00);
@@ -269,10 +430,20 @@ int main(int argc, char** argv) {
   addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_btagsf_cferr1_"+year, 1.00);
   addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_btagsf_cferr2_"+year, 1.00);
 
+  addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_btagsf_hf_"+year, 1.00);
+  addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_btagsf_lf_"+year, 1.00);
+  addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_btagsf_hfstats1_"+year, 1.00);
+  addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_btagsf_hfstats2_"+year, 1.00);
+  addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_btagsf_lfstats1_"+year, 1.00);
+  addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_btagsf_lfstats2_"+year, 1.00);
+  addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_btagsf_cferr1_"+year, 1.00);
+  addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_btagsf_cferr2_"+year, 1.00);
+
   // Trigger efficiency
   if (channel=="etau" or channel=="mutau"){
     // TODO: make sure this works
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_trgeff_single_"+channel_abbrv+"_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_trgeff_single_"+channel_abbrv+"_"+year, 1.00);
     // 50% correlated with MC
     addshapes(&cb, file, cats, {"embedded"}, "CMS_trgeff_single_"+channel_abbrv+"_"+year, 0.50);// 1.00 * 50%
     addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_trgeff_single_"+channel_abbrv+"_"+year, 0.866);// 1.00 * sqrt(1-50%^2)
@@ -286,6 +457,9 @@ int main(int argc, char** argv) {
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_trgeff_Mu8E23_"+channel_abbrv+"_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_trgeff_Mu23E12_"+channel_abbrv+"_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_trgeff_both_"+channel_abbrv+"_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_trgeff_Mu8E23_"+channel_abbrv+"_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_trgeff_Mu23E12_"+channel_abbrv+"_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_trgeff_both_"+channel_abbrv+"_"+year, 1.00);
     // 50% correlated with MC
     addshapes(&cb, file, cats, {"embedded"}, "CMS_trgeff_Mu8E23_"+channel_abbrv+"_"+year, 0.50);
     addshapes(&cb, file, cats, {"embedded"}, "CMS_trgeff_Mu23E12_"+channel_abbrv+"_"+year, 0.50);
@@ -305,6 +479,13 @@ int main(int argc, char** argv) {
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauideff_pt40to500_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauideff_pt500to1000_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauideff_ptgt1000_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_pt20to25_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_pt25to30_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_pt30to35_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_pt35to40_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_pt40to500_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_pt500to1000_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_ptgt1000_"+year, 1.00);
         
     // 50% correlated with MC
     addshapes(&cb, file, cats, {"embedded"}, "CMS_tauideff_pt20to25_"+year, 0.50);
@@ -325,6 +506,8 @@ int main(int argc, char** argv) {
     // tau ID efficiency (VSe), no anti-lepton in embedded
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauideff_VSe_bar_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauideff_VSe_end_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_VSe_bar_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_VSe_end_"+year, 1.00);
  
     // tau ID efficiency (VSmu), no anti-lepton in embedded
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauideff_VSmu_eta0to0p4_"+year, 1.00);
@@ -332,12 +515,21 @@ int main(int argc, char** argv) {
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauideff_VSmu_eta0p8to1p2_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauideff_VSmu_eta1p2to1p7_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauideff_VSmu_eta1p7to2p3_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_VSmu_eta0to0p4_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_VSmu_eta0p4to0p8_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_VSmu_eta0p8to1p2_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_VSmu_eta1p2to1p7_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauideff_VSmu_eta1p7to2p3_"+year, 1.00);
         
     // tau ES
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauES_dm0_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauES_dm1_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauES_dm10_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauES_dm11_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauES_dm0_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauES_dm1_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauES_dm10_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauES_dm11_"+year, 1.00);
 
     // 50% correlated with MC
     addshapes(&cb, file, cats, {"embedded"}, "CMS_tauES_dm0_"+year, 0.50);
@@ -352,16 +544,21 @@ int main(int argc, char** argv) {
     // tau ES (ele fake), no embedded
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_eleTES_dm0_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_eleTES_dm1_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_eleTES_dm0_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_eleTES_dm1_"+year, 1.00);
     
     // tau ES (mu fake), no embedded
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_muTES_dm0_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_muTES_dm1_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_muTES_dm0_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_muTES_dm1_"+year, 1.00);
 
     }
     
     // Tau ID efficiency with different WP than used in measurement, for e+tau only
     if (channel=="etau"){
         addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf}), "CMS_tauidWP_et_"+year, 1.00);
+	addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_tauidWP_et_"+year, 1.00);
         addshapes(&cb, file, cats, {"embedded"}, "CMS_tauidWP_et_"+year, 0.50);
         // addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_tauidWP_et_"+year, 0.866);
     }
@@ -371,6 +568,8 @@ int main(int argc, char** argv) {
         // ele ES
         addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_eleES_bar_"+year, 1.00);
         addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_eleES_end_"+year, 1.00);
+	addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_eleES_bar_"+year, 1.00);
+	addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_eleES_end_"+year, 1.00);
         addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_eleES_bar_"+year, 1.00);
         addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_eleES_end_"+year, 1.00);
     }
@@ -379,6 +578,9 @@ int main(int argc, char** argv) {
         addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_muES_eta0to1p2_"+year, 1.00);
         addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_muES_eta1p2to2p1_"+year, 1.00);
         addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_muES_eta2p1to2p4_"+year, 1.00);
+	addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_muES_eta0to1p2_"+year, 1.00);
+	addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_muES_eta1p2to2p1_"+year, 1.00);
+	addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_muES_eta2p1to2p4_"+year, 1.00);
         addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_muES_eta0to1p2_"+year, 1.00);
         addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_muES_eta1p2to2p1_"+year, 1.00);
         addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_muES_eta2p1to2p4_"+year, 1.00);
@@ -396,41 +598,50 @@ int main(int argc, char** argv) {
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JetHF_"+year, 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JetRelativeBal", 1.00);
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JetRelativeSample_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetAbsolute", 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetAbsolute_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetBBEC1", 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetBBEC1_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetEC2", 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetEC2_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetFlavorQCD", 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetHF", 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetHF_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetRelativeBal", 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JetRelativeSample_"+year, 1.00);
 
     // JER
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_JER_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_JER_"+year, 1.00);
 
     // L1 prefiring
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_prefiring_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_prefiring_"+year, 1.00);
 
     // PU
     addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_puweight_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_puweight_"+year, 1.00);
 
     // recoil correction, for Z+jets, W+jets, ggh and qqh (no W+jets in e+tau and mu+tau)
     // UES uncertainties, for MC without recoil correction
     // TODO: should be CMS_boson_met_recoil_reso_0j also TODO: 2j?
-    if (channel=="etau" or channel=="mutau"){
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_0j_resolution_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_0j_response_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_1j_resolution_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_1j_response_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_gt1j_resolution_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_gt1j_response_"+year, 1.00);
-      addshapes(&cb, file, cats, {"ttbar","ST","VV","Zh_htt","Zh_hww","Wh_htt","Wh_hww","tth",fakeProcName}, "CMS_UES_"+year, 1.00);
-    }
-    if (channel=="emu"){
-      // TODO: should be CMS_boson_met_recoil_reso/resp_ also TODO: 2j?
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_0j_resolution_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_0j_response_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_1j_resolution_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_1j_response_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_gt1j_resolution_"+year, 1.00);
-      addshapes(&cb, file, cats, JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf}), "CMS_met_gt1j_response_"+year, 1.00);
-      addshapes(&cb, file, cats, {"ttbar","ST","VV","Zh_htt","Zh_hww","Wh_htt","Wh_hww","tth",fakeProcName}, "CMS_UES_"+year, 1.00);
-    }
+    addshapes(&cb, file, cats, JoinStr({{fakeProcName},sig_ggh,sig_vbf}), "CMS_met_0j_resolution_"+year, 1.00);
+    addshapes(&cb, file, cats, JoinStr({{fakeProcName},sig_ggh,sig_vbf}), "CMS_met_0j_response_"+year, 1.00);
+    addshapes(&cb, file, cats, JoinStr({{fakeProcName},sig_ggh,sig_vbf}), "CMS_met_1j_resolution_"+year, 1.00);
+    addshapes(&cb, file, cats, JoinStr({{fakeProcName},sig_ggh,sig_vbf}), "CMS_met_1j_response_"+year, 1.00);
+    addshapes(&cb, file, cats, JoinStr({{fakeProcName},sig_ggh,sig_vbf}), "CMS_met_gt1j_resolution_"+year, 1.00);
+    addshapes(&cb, file, cats, JoinStr({{fakeProcName},sig_ggh,sig_vbf}), "CMS_met_gt1j_response_"+year, 1.00);
+    addshapes(&cb, file, cats, {"ttbar", fakeProcName}, "CMS_UES_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_met_0j_resolution_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_met_0j_response_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_met_1j_resolution_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_met_1j_response_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_met_gt1j_resolution_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_met_gt1j_response_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_UES_"+year, 1.00);
     
     // Z pt reweighting
-    addshapes(&cb, file, cats, {"ZJ", fakeProcName}, "CMS_Zpt_"+year, 1.00);
+    addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_Zpt_"+year, 1.00);
     
     // top pt reweighting (no need to add if data/MC agreement is fairly good with nominal top pt sf applied)
     addshapes(&cb, file, cats, {"ttbar", fakeProcName}, "CMS_toppt_"+year, 1.00);
@@ -477,11 +688,11 @@ int main(int argc, char** argv) {
     // Name of the input datacard
     // The ExtractShapes method supports {$BIN, $PROCESS, $MASS, $SYSTEMATIC}
     cb.cp().backgrounds().ExtractShapes(
-					aux_shapes + "out_"+channel+".root",
+					other_aux + "out_"+channel+".root",
                                         "$BIN/$PROCESS",
                                         "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().signals().ExtractShapes(
-				    aux_shapes + "out_"+channel+".root",
+				    other_aux + "out_"+channel+".root",
                                     "$BIN/$PROCESS",
                                     "$BIN/$PROCESS_$SYSTEMATIC");
 
@@ -542,13 +753,6 @@ int main(int argc, char** argv) {
 	cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf,{"embedded"}})).RenameSystematic(cb, "CMS_muID_13TeV", "CMS_eff_m_id");
 	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_eleID_13TeV", "CMS_NPS25003_EMB_eff_e_id");
 	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muID_13TeV", "CMS_NPS25003_EMB_eff_m_id");
-        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_resolution_"+year, "CMS_NPS25003_met_0j_resolution_"+year);
-        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_response_"+year, "CMS_NPS25003_met_0j_response_"+year);
-        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_resolution_"+year, "CMS_NPS25003_met_1j_resolution_"+year);
-        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_response_"+year, "CMS_NPS25003_met_1j_response_"+year);
-        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_resolution_"+year, "CMS_NPS25003_met_gt1j_resolution_"+year);
-        cb.cp().process(JoinStr({{"ZJ","WJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_response_"+year, "CMS_NPS25003_met_gt1j_response_"+year);
-        cb.cp().process({"ttbar","ST","VV","Zh_htt","Zh_hww","Wh_htt","Wh_hww","tth",fakeProcName}).RenameSystematic(cb, "CMS_UES_"+year, "CMS_NPS25003_UES_"+year);
 	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_SScorrection_"+year, "CMS_NPS25003_SScorrection_"+year);
 	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_SSclosure_"+year, "CMS_NPS25003_SSclosure_"+year);
 	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_SSboth2D_"+year, "CMS_NPS25003_SSboth2D_"+year);
@@ -568,11 +772,6 @@ int main(int argc, char** argv) {
         cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_muID_13TeV", "CMS_eff_m_id");
         cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_EMB_muID_13TeV", "CMS_NPS25003_EMB_eff_m_id");
     }
-
-//    if (channel=="etau"){
-//        cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_tauidWP_et_"+year, "CMS_NPS25003_eff_t_WP_etau_"+year);
-//	cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_tauidWP_et_"+year, "CMS_NPS25003_EMB_eff_t_WP_etau_"+year);
-//    }
 
     if (channel=="etau" or channel=="mutau"){
         cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf, {"embedded"}})).RenameSystematic(cb, "CMS_trgeff_single_"+channel_abbrv+"_"+year, "CMS_NPS25003_trgeff_single_"+channel_abbrv+"_"+year);
@@ -614,13 +813,6 @@ int main(int argc, char** argv) {
 	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt100to120_"+year, "CMS_NPS25003_fake_t_pt100to120_"+year);
 	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_pt120to150_"+year, "CMS_NPS25003_fake_t_pt120to150_"+year);
 	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_jetFR_ptgt150_"+year, "CMS_NPS25003_fake_t_ptgt150_"+year);
-        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_resolution_"+year, "CMS_NPS25003_met_0j_resolution_"+year);
-        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_response_"+year, "CMS_NPS25003_met_0j_response_"+year);
-        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_resolution_"+year, "CMS_NPS25003_met_1j_resolution_"+year);
-        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_response_"+year, "CMS_NPS25003_met_1j_response_"+year);
-        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_resolution_"+year, "CMS_NPS25003_met_gt1j_resolution_"+year);
-        cb.cp().process(JoinStr({{"ZJ","ggh_htt","ggh_hww","qqh_htt","qqh_hww",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_response_"+year, "CMS_NPS25003_met_gt1j_response_"+year);
-        cb.cp().process({"ttbar","ST","VV","Zh_htt","Zh_hww","Wh_htt","Wh_hww","tth",fakeProcName}).RenameSystematic(cb, "CMS_UES_"+year, "CMS_NPS25003_UES_"+year);
 	cb.cp().process({fakeProcName}).RenameSystematic(cb, "CMS_crosstrg_fakefactor_"+year, "CMS_NPS25003_crosstrg_fakefactor_"+year);
     }
 
@@ -661,11 +853,21 @@ int main(int argc, char** argv) {
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JetRelativeSample_"+year, "CMS_scale_j_RelativeSample_"+year);
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_JER_"+year, "CMS_res_j_"+year);
     cb.cp().process(JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_prefiring_"+year, "CMS_NPS25003_l1_prefiring_"+year);
-    cb.cp().process({"ZJ", fakeProcName}).RenameSystematic(cb, "CMS_Zpt_"+year, "CMS_NPS25003_Z_pt_reweighting_"+year);
-    cb.cp().process({{"ttbar"}, fakeProcName}).RenameSystematic(cb, "CMS_toppt_"+year, "CMS_NPS25003_top_pt_reweighting_"+year);
+    cb.cp().process(JoinStr({{"others",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_resolution_"+year, "CMS_NPS25003_met_0j_resolution_"+year);
+    cb.cp().process(JoinStr({{"others",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_0j_response_"+year, "CMS_NPS25003_met_0j_response_"+year);
+    cb.cp().process(JoinStr({{"others",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_resolution_"+year, "CMS_NPS25003_met_1j_resolution_"+year);
+    cb.cp().process(JoinStr({{"others",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_1j_response_"+year, "CMS_NPS25003_met_1j_response_"+year);
+    cb.cp().process(JoinStr({{"others",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_resolution_"+year, "CMS_NPS25003_met_gt1j_resolution_"+year);
+    cb.cp().process(JoinStr({{"others",fakeProcName},sig_ggh,sig_vbf})).RenameSystematic(cb, "CMS_met_gt1j_response_"+year, "CMS_NPS25003_met_gt1j_response_"+year);
+    cb.cp().process({"ttbar","others",fakeProcName}).RenameSystematic(cb, "CMS_UES_"+year, "CMS_NPS25003_UES_"+year);
+    cb.cp().process({"others", fakeProcName}).RenameSystematic(cb, "CMS_Zpt_"+year, "CMS_NPS25003_Z_pt_reweighting_"+year);
+    cb.cp().process({"ttbar", fakeProcName}).RenameSystematic(cb, "CMS_toppt_"+year, "CMS_NPS25003_top_pt_reweighting_"+year);
     cb.cp().process({"ttbar"}).RenameSystematic(cb, "CMS_renscfact_"+year, "QCDscale_ren_ttbar");
     cb.cp().process({"ttbar"}).RenameSystematic(cb, "CMS_facscfact_"+year, "QCDscale_fac_ttbar");
     cb.cp().process({"embedded"}).RenameSystematic(cb, "CMS_nonDY_"+year, "CMS_NPS25003_EMB_nonDY_"+year);
+
+    // Add other normalization uncertainties
+    addothernorm(&cb, otherfile, cats);
 
     ch::SetStandardBinNames(cb);
     
@@ -677,5 +879,7 @@ int main(int argc, char** argv) {
       cout << ">> Writing datacard for bin: " << b << " and " << signalType <<  " mass point " << mass1 << ", " << mass2 << "\n";
       cb.cp().bin({b}).mass({mass1, "*"}).WriteDatacard(b + "_" + signalType + "_" + mass1 + "_" + mass2 + ".txt", output);
     }
+
+    otherfile->Close();
     
 }

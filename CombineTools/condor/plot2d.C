@@ -12,7 +12,7 @@ void plot2d(string ch)
   c1->GetFrame()->SetBorderSize(6);
   c1->GetFrame()->SetBorderMode(-1);
   c1->SetRightMargin(0.2);
-  gStyle->SetPalette(kLightTemperature);
+  gStyle->SetPalette(kBeach);
   gStyle->SetPaintTextFormat("4.1f");
 
   float m1values[6] = {12.5, 17.5, 25, 35, 45, 55};
@@ -24,17 +24,17 @@ void plot2d(string ch)
   double z;
 
 
-  hist->GetXaxis()->SetTitle("m_{h_{1}} [GeV]");
+  hist->GetXaxis()->SetTitle("m_{#phi_{1}} [GeV]");
   hist->GetXaxis()->SetTitleSize(0.04);
   hist->GetXaxis()->CenterTitle();
   hist->GetXaxis()->SetTitleOffset(1.1);
 
-  hist->GetYaxis()->SetTitle("m_{h_{2}} [GeV]");
+  hist->GetYaxis()->SetTitle("m_{#phi_{2}} [GeV]");
   hist->GetYaxis()->SetTitleSize(0.04);
   hist->GetYaxis()->CenterTitle();
-  hist->GetYaxis()->SetTitleOffset(1.2);
+  hist->GetYaxis()->SetTitleOffset(1.15);
 
-  hist->GetZaxis()->SetTitle("95% CL upper limit on #sigma(H#rightarrow h_{1} h_{2} #rightarrow2#tau4b/2#tau2b) (pb)");
+  hist->GetZaxis()->SetTitle("95% CL upper limit on #sigma(H#rightarrow #phi_{1} #phi_{2} #rightarrow2#tau4b/2#tau2b) (pb)");
   hist->GetZaxis()->CenterTitle();  // Optional: Center the title
   hist->GetZaxis()->SetTitleOffset(1.4);  // Adjust to push the title to the right
   hist->GetZaxis()->SetTitleSize(0.04);
@@ -65,7 +65,7 @@ void plot2d(string ch)
   else if (ch == "etau") { channel = "e#tau_{h} channel"; }
   else if (ch == "emu") { channel = "e#mu channel"; }
   else if (ch == "allchannels") { channel = "Combined"; }
-  TPaveText* pave = new TPaveText(0.5,0.78,0.75,0.88,"NDC");
+  TPaveText* pave = new TPaveText(0.5,0.73,0.75,0.88,"NDC");
   pave->SetFillColor(0);
   pave->SetBorderSize(0);
   pave->SetTextSize(0.042);
@@ -73,6 +73,7 @@ void plot2d(string ch)
   pave->SetTextAlign(12);
   pave->AddText("#bf{CMS} #it{Preliminary}");
   pave->AddText(channel.c_str());
+  pave->AddText("Cut-based");
 
   file.close();
 

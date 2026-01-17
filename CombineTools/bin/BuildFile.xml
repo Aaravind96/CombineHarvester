@@ -23,6 +23,8 @@
 <bin file="YieldTable.cpp" name="YieldTable"></bin>
 <bin file="hzz4l.cpp" name="hzz4l"></bin>
 <bin file="hToA1A2.cpp" name="hToA1A2"></bin>
+<bin file="hToA1A2_merge.cpp" name="hToA1A2_merge"></bin>
+<bin file="hToA1A2_modified.cpp" name="hToA1A2_modified"></bin>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>

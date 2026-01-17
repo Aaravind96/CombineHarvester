@@ -152,11 +152,11 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
 
     if (signame == "4b2t") {
         //process = "h #rightarrow h_{1} h_{2} #rightarrow 2#tau4b";
-        yname = "B(H#rightarrow h_{1} h_{2} #rightarrow 2#tau4b) (\%)";
+        yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau4b) (\%)";
     }
     else if (signame == "2b2t") {
         //process = "h #rightarrow h_{1} h_{2} #rightarrow 2#tau2b";
-        yname = "B(H#rightarrow h_{1} h_{2} #rightarrow 2#tau2b) (\%)";
+        yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b) (\%)";
     }
 
     if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
@@ -164,8 +164,8 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     else if (ch == "emu") { channel = "e#mu channel"; }
     else if (ch == "allchannels") { channel = "Combined"; }
 
-    xname = "m_{h_{2}} [GeV]";
-    description = "m_{h_{1}} = " + m1 + " GeV";
+    xname = "m_{#phi_{2}} [GeV]";
+    description = "m_{#phi_{1}} = " + m1 + " GeV";
 
     //initialize legend
     double legsize = 0.04;
@@ -184,7 +184,7 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     double pavex1 = 0.17;
     double pavex2 = 0.45;
     double pavey2 = 0.93;
-    double pavey1 = 0.7;
+    double pavey1 = 0.65;
     TPaveText* pave = new TPaveText(pavex1,pavey1,pavex2,pavey2,"NDC");
     pave->SetFillColorAlpha(0, 0);
     pave->SetBorderSize(0);
@@ -195,6 +195,7 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     //pave->AddText(process.c_str());
     pave->AddText(channel.c_str());
     pave->AddText(description.c_str());
+    pave->AddText("Cut-based");
 
     //preamble of legend
     leg->AddEntry((TObject*)NULL,"95% CL upper limits","");
