@@ -31,7 +31,6 @@ void addshapes(ch::CombineHarvester* cb, TFile* input_file, vector<pair<int,stri
     // Loop over the given processes
     for (auto proc_names_itn = proc_names.begin(); proc_names_itn != proc_names.end(); ++proc_names_itn) {
       string proc_var = *proc_names_itn;
-      if (proc_var == "others") continue;
       TH1F* shapeBase = (TH1F*) dir->Get(proc_var.c_str());
       TH1F* shapeUp = (TH1F*) dir->Get((proc_var + "_" + syst_name + "Up").c_str());
       TH1F* shapeDown = (TH1F*) dir->Get((proc_var + "_" + syst_name + "Down").c_str());
@@ -64,107 +63,6 @@ void addshapes(ch::CombineHarvester* cb, TFile* input_file, vector<pair<int,stri
         cout << "Skipping shape with non-positive norms: " << syst_name << " for process " << *proc_names_itn << " in category " << category_name << endl;
       }
     }
-  }
-}
-
-void addothershapes(ch::CombineHarvester* cb, TFile* input_file, TFile* output_file, vector<pair<int,string>> categories, vector<string> proc_names, string syst_name, float init_value) {
-  // Loop over categories
-  for (auto categories_itn = categories.begin(); categories_itn != categories.end(); ++categories_itn) {
-    string category_name = categories_itn->second;
-    TDirectory* dir = (TDirectory*) input_file->Get(category_name.c_str());
-    if (dir == nullptr) {
-      cout << "Warning: category " << category_name << " missing in file!" << endl;
-      throw;
-    }
-    TDirectory* outdir = output_file->GetDirectory(category_name.c_str());
-    if (!outdir) {
-      outdir = output_file->mkdir(category_name.c_str());
-    }
-    outdir->cd();
-
-    TH1F* otherBase = (TH1F*)outdir->Get("others");
-    bool nominalPresent = otherBase;
-    if (!otherBase) {
-        otherBase = new TH1F("others", "others", 10, 10, 110);
-        otherBase->SetDirectory(outdir);
-    }
-    
-    string upname = "others_" + syst_name + "Up";
-    string downname = "others_" + syst_name + "Down";
-    
-    TH1F* otherUp = (TH1F*)outdir->Get(upname.c_str());
-    if (!otherUp) {
-        otherUp = new TH1F(upname.c_str(), upname.c_str(), 10, 10, 110);
-        otherUp->SetDirectory(outdir);
-    }
-    
-    TH1F* otherDown = (TH1F*)outdir->Get(downname.c_str());
-    if (!otherDown) {
-        otherDown = new TH1F(downname.c_str(), downname.c_str(), 10, 10, 110);
-        otherDown->SetDirectory(outdir);
-    }
-
-    if (!otherUp && !otherDown) continue;
-
-    // Loop over the given processes
-    for (auto proc_names_itn = proc_names.begin(); proc_names_itn != proc_names.end(); ++proc_names_itn) {
-      string proc_var = *proc_names_itn;
-      TH1F* shapeBase = (TH1F*) dir->Get(proc_var.c_str());
-      TH1F* shapeUp = (TH1F*) dir->Get((proc_var + "_" + syst_name + "Up").c_str());
-      TH1F* shapeDown = (TH1F*) dir->Get((proc_var + "_" + syst_name + "Down").c_str());
-      // Check if each of the given processes has at least the shape templates in file
-      // They could be invalid for use but must be there if passed in argument
-      if (shapeBase == nullptr) {
-        cout << "Warning: the nominal process shape " << proc_var << " in category " << category_name << " does not exist!" << endl;
-        throw;
-      }
-      if (shapeUp == nullptr) {
-        cout << "Warning: the Up shape " << proc_var << "_" << syst_name << "Up" << " in category " << category_name << " does not exist! Cloning Base!" << endl;
-        shapeUp = (TH1F*)shapeBase->Clone();
-      }
-      if (shapeDown == nullptr) {
-        cout << "Warning: the Down shape " << proc_var << "_" << syst_name << "Down" << " in category " << category_name << " does not exist! Cloning Base!" << endl;
-        shapeDown = (TH1F*)shapeBase->Clone();
-      }
-
-      // Manually Clone base shape even if variations exist for these combinations
-      if (syst_name.find("CMS_met_") != std::string::npos && (proc_var == "ST" || proc_var == "VV" || proc_var == "Zh_htt" || proc_var == "Zh_hww" || proc_var == "Wh_htt" || proc_var == "Wh_hww" || proc_var == "tth")) {
-        shapeUp = (TH1F*)shapeBase->Clone();
-        shapeDown = (TH1F*)shapeBase->Clone();	
-      }
-      if (syst_name.find("CMS_UES_") != std::string::npos && (proc_var == "ZJ" || proc_var == "WJ" || proc_var == "ggh_htt" || proc_var == "qqh_htt" || proc_var == "ggh_hww" || proc_var == "qqh_hww")) {
-        shapeUp = (TH1F*)shapeBase->Clone();
-	shapeDown = (TH1F*)shapeBase->Clone();
-      }
-      if (syst_name.find("CMS_Zpt_") != std::string::npos && (proc_var != "ZJ")) {
-        shapeUp = (TH1F*)shapeBase->Clone();
-        shapeDown = (TH1F*)shapeBase->Clone();
-      }
-
-      // Check if the template shapes have positive norms
-      Float_t shapeBase_norm = 0.0;
-      Float_t shapeUp_norm = 0.0;
-      Float_t shapeDown_norm = 0.0;
-      shapeBase_norm = shapeBase->Integral();
-      shapeUp_norm = shapeUp->Integral();
-      shapeDown_norm = shapeDown->Integral();
-      bool HasPositiveNorms = shapeBase_norm > 0.005 and shapeUp_norm > 0.0 and shapeDown_norm > 0.0;
-      if (HasPositiveNorms) {
-	if (!nominalPresent) otherBase->Add(shapeBase);
-	otherUp->Add(shapeUp);
-	otherDown->Add(shapeDown);
-      }
-      else {
-        cout << "Skipping shape with non-positive norms: " << syst_name << " for process " << *proc_names_itn << " in category " << category_name << endl;
-      }
-      cb->cp().bin({category_name}).process({"others"}).AddSyst(*cb, syst_name, "shape", ch::syst::SystMap<>::init(init_value));
-      outdir->cd();
-      if (!nominalPresent) otherBase->Write("others", TObject::kOverwrite);
-      otherUp->Write(upname.c_str(), TObject::kOverwrite);
-      otherDown->Write(downname.c_str(), TObject::kOverwrite);
-      outdir->Write("", TObject::kOverwrite);
-    }
-    output_file->Write("", TObject::kOverwrite);
   }
 }
 
@@ -304,10 +202,6 @@ int main(int argc, char** argv) {
     fakeProcName = "qcd";
   }
     
-  // List of backgrounds in the datacards
-  vector<string> other_procs = {"ZJ","ST","VV","ggh_htt","ggh_hww","qqh_htt","qqh_hww","Zh_htt","Zh_hww","Wh_htt","Wh_hww","tth"};
-  if (channel=="emu") other_procs.push_back("WJ");
-
   vector<string> bkg_procs = {"ttbar", "others"};
   vector<string> bkg_procs_noEMB_nofake = bkg_procs;
 

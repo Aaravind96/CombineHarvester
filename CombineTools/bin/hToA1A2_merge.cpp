@@ -449,6 +449,7 @@ int main(int argc, char** argv) {
     addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_trgeff_single_"+channel_abbrv+"_"+year, 0.866);// 1.00 * sqrt(1-50%^2)
     if (channel=="mutau" or (channel=="etau" && year!="2016preVFP" && year!="2016postVFP")){
       addshapes(&cb, file, cats, JoinStr({bkg_procs_noEMB_nofake,{fakeProcName},sig_ggh,sig_vbf}), "CMS_trgeff_cross_"+channel_abbrv+"_"+year, 1.00);
+      addothershapes(&cb, file, otherfile, cats, JoinStr({other_procs}), "CMS_trgeff_cross_"+channel_abbrv+"_"+year, 1.00);
       addshapes(&cb, file, cats, {"embedded"}, "CMS_trgeff_cross_"+channel_abbrv+"_"+year, 0.50);
       addshapes(&cb, file, cats, {"embedded"}, "CMS_EMB_trgeff_cross_"+channel_abbrv+"_"+year, 0.866);
     }
