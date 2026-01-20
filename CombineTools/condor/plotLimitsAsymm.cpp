@@ -191,7 +191,7 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     pave->SetTextSize(legsize);
     pave->SetTextFont(42);
     pave->SetTextAlign(12);
-    pave->AddText("#bf{CMS} #it{Preliminary}");
+    pave->AddText("#bf{CMS}");
     //pave->AddText(process.c_str());
     pave->AddText(channel.c_str());
     pave->AddText(description.c_str());

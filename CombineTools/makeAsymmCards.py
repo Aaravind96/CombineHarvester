@@ -43,7 +43,7 @@ os.system("ulimit -s unlimited")
 for channel in channels:
     for massList in allMasses[signalType]:
         for masspoint in massList:
-            command=f"hToA1A2 {channel} {signalType} {year} {masspoint[0]} {masspoint[1]} 3 lowMassSR mediumMassSR highMassSR"
+            command=f"hToA1A2_modified {channel} {signalType} {year} {masspoint[0]} {masspoint[1]} 3 lowMassSR mediumMassSR highMassSR"
             os.system(command)
 
         os.system("mv hToA1A2*.txt asymmCards/")

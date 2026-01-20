@@ -71,7 +71,7 @@ void plot2d(string ch)
   pave->SetTextSize(0.042);
   pave->SetTextFont(42);
   pave->SetTextAlign(12);
-  pave->AddText("#bf{CMS} #it{Preliminary}");
+  pave->AddText("#bf{CMS}");
   pave->AddText(channel.c_str());
   pave->AddText("Cut-based");
 
