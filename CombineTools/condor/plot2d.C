@@ -34,7 +34,8 @@ void plot2d(string ch)
   hist->GetYaxis()->CenterTitle();
   hist->GetYaxis()->SetTitleOffset(1.15);
 
-  hist->GetZaxis()->SetTitle("95% CL upper limit on #sigma(H#rightarrow #phi_{1} #phi_{2} #rightarrow2#tau4b/2#tau2b) (pb)");
+  //hist->GetZaxis()->SetTitle("95% CL upper limit on #sigma(H#rightarrow #phi_{1} #phi_{2} #rightarrow2#tau4b/2#tau2b) (pb)");
+  hist->GetZaxis()->SetTitle("#sigma_{SM}B(H#rightarrow #phi_{1} #phi_{2} #rightarrow2#tau4b,2#tau2b) [pb]");
   hist->GetZaxis()->CenterTitle();  // Optional: Center the title
   hist->GetZaxis()->SetTitleOffset(1.4);  // Adjust to push the title to the right
   hist->GetZaxis()->SetTitleSize(0.04);
@@ -55,7 +56,7 @@ void plot2d(string ch)
 
   }
 
-  TLatex* text = new TLatex(0.585, 0.91, "138 fb^{-1} (13 TeV)");
+  TLatex* text = new TLatex(0.54, 0.91, "138 fb^{-1} (13 TeV)");
   text->SetNDC();
   text->SetTextSize(0.04);
   text->SetTextFont(42);
@@ -65,7 +66,7 @@ void plot2d(string ch)
   else if (ch == "etau") { channel = "e#tau_{h} channel"; }
   else if (ch == "emu") { channel = "e#mu channel"; }
   else if (ch == "allchannels") { channel = "Combined"; }
-  TPaveText* pave = new TPaveText(0.5,0.73,0.75,0.88,"NDC");
+  TPaveText* pave = new TPaveText(0.55,0.73,0.78,0.88,"NDC");
   pave->SetFillColor(0);
   pave->SetBorderSize(0);
   pave->SetTextSize(0.042);
@@ -75,6 +76,14 @@ void plot2d(string ch)
   pave->AddText(channel.c_str());
   pave->AddText("Cut-based");
 
+  TPaveText* pave2 = new TPaveText(0.2,0.12,0.78,0.178,"NDC");
+  pave2->SetFillColor(0);
+  pave2->SetBorderSize(0);
+  pave2->SetTextSize(0.042);
+  pave2->SetTextFont(42);
+  pave2->SetTextAlign(12);
+  pave2->AddText("Observed 95\% CL upper limits");
+
   file.close();
 
   hist->SetStats(0);
@@ -82,6 +91,7 @@ void plot2d(string ch)
   hist->Draw("COLZ");
   hist->Draw("TEXT45 same");
   pave->Draw("same");
+  pave2->Draw("same");
   text->Draw("same");
   c1->RedrawAxis();
   std::string title = "plotLimit_2d_"+ch;

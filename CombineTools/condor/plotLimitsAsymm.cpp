@@ -152,11 +152,11 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
 
     if (signame == "4b2t") {
         //process = "h #rightarrow h_{1} h_{2} #rightarrow 2#tau4b";
-        yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau4b) (\%)";
+        yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau4b) [\%]";
     }
     else if (signame == "2b2t") {
         //process = "h #rightarrow h_{1} h_{2} #rightarrow 2#tau2b";
-        yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b) (\%)";
+        yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b) [\%]";
     }
 
     if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
@@ -245,9 +245,9 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
 
     // multiplyXsec(rtmpC,xsecs);
     TGraph* g_central = new TGraph(npts,mtmpC,rtmpC);
-    g_central->SetLineColor(kBlue);
-    g_central->SetLineStyle(2);
-    g_central->SetLineWidth(4);
+    g_central->SetLineColor(kBlack);
+    g_central->SetLineStyle(7);
+    g_central->SetLineWidth(2);
     leg->AddEntry(g_central,"Median expected","l");
     getRange(npts,rtmpC,ymin,ymax);
 
@@ -255,7 +255,7 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     TGraph* g_one = NULL;
     if(nsigma>=1){
         g_one = getBand(limit, 0.16, 0.84, xsecs, percentageScale);
-        int cOne = TColor::GetColor("#85D1FBff");
+        int cOne = TColor::GetColor("#228b22"); //85D1FBff
         g_one->SetFillColor(cOne);
         leg->AddEntry(g_one,"68% expected","f");
         getRange(npts*2,g_one->GetY(),ymin,ymax);
@@ -263,7 +263,7 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
     TGraph* g_two = NULL;
     if(nsigma>=2){
         g_two = getBand(limit, 0.025, 0.975, xsecs, percentageScale);
-        int cTwo = TColor::GetColor("#FFDF7Fff");
+        int cTwo = TColor::GetColor("#ffcc00"); //FFDF7Fff
         g_two->SetFillColor(cTwo);
         leg->AddEntry(g_two,"95% expected","f");
         getRange(npts*2,g_two->GetY(),ymin,ymax);
