@@ -62,11 +62,11 @@ void plot2d(string ch)
   text->SetTextFont(42);
 
   string channel;
-  if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
-  else if (ch == "etau") { channel = "e#tau_{h} channel"; }
-  else if (ch == "emu") { channel = "e#mu channel"; }
+  if (ch == "mutau") { channel = "#mu#tau_{h}"; }
+  else if (ch == "etau") { channel = "e#tau_{h}"; }
+  else if (ch == "emu") { channel = "e#mu"; }
   else if (ch == "allchannels") { channel = "Combined"; }
-  TPaveText* pave = new TPaveText(0.55,0.73,0.78,0.88,"NDC");
+  TPaveText* pave = new TPaveText(0.6,0.73,0.78,0.88,"NDC");
   pave->SetFillColor(0);
   pave->SetBorderSize(0);
   pave->SetTextSize(0.042);

@@ -159,9 +159,9 @@ void plotLimitsAsymm(string infile, string signame, string year, string ch, stri
         yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b) [\%]";
     }
 
-    if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
-    else if (ch == "etau") { channel = "e#tau_{h} channel"; }
-    else if (ch == "emu") { channel = "e#mu channel"; }
+    if (ch == "mutau") { channel = "#mu#tau_{h}"; }
+    else if (ch == "etau") { channel = "e#tau_{h}"; }
+    else if (ch == "emu") { channel = "e#mu"; }
     else if (ch == "allchannels") { channel = "Combined"; }
 
     xname = "m_{#phi_{2}} [GeV]";
