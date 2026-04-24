@@ -47,13 +47,10 @@ void plot2d(string ch)
   fstream file;
   file.open("median_limits_"+ch+".txt", ios::in);
 
-  while(1)
+  while (file >> y >> x >> z)
   {
-        file >> y >> x >> z;
         cout<<x<<"\t"<<y<<"\t"<<z<<endl;
         hist->Fill(x, y, z);
-        if(file.eof()) break;
-
   }
 
   TLatex* text = new TLatex(0.54, 0.91, "138 fb^{-1} (13 TeV)");

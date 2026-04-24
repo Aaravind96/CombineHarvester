@@ -98,14 +98,14 @@ void getRange(int n, double* arr, double& ymin, double& ymax){
 }
 
 // usage:
-// root -l -b -q 'plotLimitsAsymm.C+("cascade/higgsCombine_a1a2_4b2t_2018_mutau_m1_15.root", "4b2t", "2018", "mutau", "15", 2, false)
-// infile : input ROOT file path
-// sigtype: 4b2t (cascade) or 2b2t (non-cascade)
-// year: 2018, 2017, or 2016
-// channel: mutau, etau, or emu
-// m1: mass of a_1
-// lbool: draw lines segregating the m_phi mass points 
-void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string year, string ch, string m1, int nsigma=0, bool doLog=false, bool lbool=true){
+// root -l -b -q 'plotLimitsAsymm_ur_sepmasspoints_C.cpp+("bdtbased_root/higgsCombine_a1a2_4b2t_allchannels_combined.root", "4b2t", "allyears", "allchannels", 2, true)'
+// infile : input ROOT file path combining all mass points
+// sigtype: 4b2t (cascade) or 2b2t (non-cascade), right now the binning needs to be changed by hand for each case \FIXME
+// year: individual or allyears
+// channel: allchannels, mutau, etau, or emu
+// nsigma: sd band being considered
+// doLog: y-axis choice
+void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string year, string ch, int nsigma=0, bool doLog=false){
     //cross section values
     vector<double> masses = {};
     vector<double> masses_i = {};
@@ -114,7 +114,6 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
 
     if ((signame == "4b2t")) {
 	masses = {30, 40, 50, 60, 70, 80, 90, 100, 110,40, 50, 60, 70, 80, 90, 100, 60, 70, 80, 90};
-        //masses = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
         masses_i = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
         xsecs = {xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal,xsecVal };
     }
@@ -140,8 +139,7 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
         return;
     }
     //setup plotting options
-    //string process, yname, xname, channel, description;
-    string process, yname, xname, channel, description, description2;
+    string process, yname, xname, channel;
 
     if (signame == "4b2t") {
         process = "H #rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau4b";
@@ -151,22 +149,18 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
         process = "H #rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b";
         yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b) [\%]";
     }
+    xname ="(m_{#phi_{1}}, m_{#phi_{2}}) [GeV]";
 
     if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
     else if (ch == "etau") { channel = "e#tau_{h} channel"; }
     else if (ch == "emu") { channel = "e#mu channel"; }
     else if (ch == "allchannels") { channel = "Combined"; }
 
-    xname ="(m_{#phi_{1}}, m_{#phi_{2}}) [GeV]";
-    if (signame == "4b2t") 
-       description = "4b2#tau";// "m_{h_{1}} = " + m1 + " GeV";
-    else
-       description = "2b2#tau";// "m_{h_{1}} = " + m1 + " GeV";
     //initialize legend
-    double legsize =  0.05+ 0.005;//0.04;
-    double legx1 = 0.54;//0.80; // 0.54;
-    double legx2 = 1.0; // 0.88;
-    double legy2 = 0.92; //0.92
+    double legsize =  0.055;
+    double legx1 = 0.54;
+    double legx2 = 1.0;
+    double legy2 = 0.92;
     double legy1 = legy2-legsize*(4+nsigma+0.5)+ 0.125;
     TLegend* leg = new TLegend(legx1,legy1,legx2,legy2);
     leg->SetFillColorAlpha(0, 0);
@@ -175,11 +169,12 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     leg->SetTextFont(42);
     leg->SetMargin(0.15);
     leg->SetNColumns(2);
+    leg->SetHeader("95% CL upper limits","C");
     //initialize pave
-    double pavex1 = 0.085; //0.17;
-    double pavex2 = 0.32; //0.45;
+    double pavex1 = 0.085;
+    double pavex2 = 0.32;
     double pavey2 = 0.92;
-    double pavey1 = 0.7;
+    double pavey1 = 0.7; // 0.63 for adding "Cut-based"
     TPaveText* pave = new TPaveText(pavex1,pavey1,pavex2,pavey2,"NDC");
     pave->SetFillColorAlpha(0, 0);
     pave->SetBorderSize(0);
@@ -189,60 +184,8 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     pave->AddText("#bf{CMS}");// #it{Preliminary}");
     pave->AddText(process.c_str());
     pave->AddText(channel.c_str());
-    //pave->AddText(description.c_str());
+    //pave->AddText("Cut-based");
 
-    pavex1 = 0.20; //0.17;
-    pavex2 = 0.58; //0.45;
-    pavey2 = 0.73;
-    pavey1 = 0.52;
-    TPaveText* pave1 = new TPaveText(pavex1,pavey1,pavex2,pavey2,"NDC");
-    pave1->SetFillColorAlpha(0, 0);
-    pave1->SetBorderSize(0);
-    pave1->SetTextSize(legsize);
-    pave1->SetTextFont(42);
-    pave1->SetTextAlign(12);
-    pave1->AddText("\n\n\n");
-    description2="m_{#phi_{1}} = 15 GeV",
-    pave1->AddText(description2.c_str());
-
-    pavex1 = 0.60; //0.17;
-    pavex2 = 0.58; //0.45;
-    pavey2 = 0.73;
-    pavey1 = 0.52;
-    TPaveText* pave2 = new TPaveText(pavex1,pavey1,pavex2,pavey2,"NDC");
-    pave2->SetFillColorAlpha(0, 0);
-    pave2->SetBorderSize(0);
-    pave2->SetTextSize(legsize);
-    pave2->SetTextFont(42);
-    pave2->SetTextAlign(12);
-    pave2->AddText("\n\n\n");
-    description2="m_{#phi_{1}} = 20 GeV",
-    pave2->AddText(description2.c_str());
-
-    pavex1 = 0.85; //0.17;
-    pavex2 = 1.0; //0.45;
-    pavey2 = 0.73;
-    pavey1 = 0.52;
-    TPaveText* pave3 = new TPaveText(pavex1,pavey1,pavex2,pavey2,"NDC");
-    pave3->SetFillColorAlpha(0, 0);
-    pave3->SetBorderSize(0);
-    pave3->SetTextSize(legsize);
-    pave3->SetTextFont(42);
-    pave3->SetTextAlign(12);
-    pave3->AddText("\n\n\n");
-    description2="m_{#phi_{1}} = 30 GeV",
-    pave3->AddText(description2.c_str());
-    //preamble of legend
-    leg->SetHeader("95% CL upper limits","C");
-    //get cross section
-    TGraph* g_xsec = new TGraph(xsecs.size(),masses_i.data(),xsecs.data());
-    g_xsec->SetLineColor(kMagenta);
-    g_xsec->SetLineStyle(1);
-    g_xsec->SetLineWidth(2);
-    getRange(xsecs.size(),xsecs.data(),ymin,ymax);
-    //only get x range once
-    getRange(masses.size(),masses_i.data(),xmin,xmax);
-    std::cout<<"getRange: \nxmin, xmax: "<<xmin<<xmax;
     //get observed limit
     double percentageScale = 100;
     int npts = limit->Draw(Form("limit*%g:limitErr*%g:mh", percentageScale, percentageScale), "quantileExpected==-1", "goff");
@@ -259,31 +202,23 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     //char const *range[n] = {"(15,20)","(15,30)","(20,30)","(20,40)","(30,40)","(30,50)","(30,60)","(40,50)","(40,60)","(40,70)","(40,80)","(50,60)","(50,70)"};
 
     // multiplyXsec(rtmp,xsecs);
-    //TGraph* g_obs = new TGraph(npts,mtmp,rtmp);
     TGraph* g_obs = new TGraph(npts,masses_i.data(),rtmp);
     g_obs->SetMarkerColor(kBlack);
     g_obs->SetLineColor(kBlack);
     g_obs->SetMarkerStyle(20);
     g_obs->SetMarkerSize(2);
-    //g_obs->SetLineStyle(1);
     g_obs->SetLineWidth(2);
-    //g_obs->SetLineCap(2);
-    //for (i=1;i<=n;i++) g_obs->GetXaxis()->SetBinLabel(i,range[i-1]);
     leg->AddEntry(g_obs,"Observed","pl");
     getRange(npts,rtmp,ymin,ymax);
-
-    for(int m = 0; m < npts; ++m){
-	std::cout<<mtmp[m]<<"\t"<<m1<<"\trtmp: "<<(rtmp[m]*xsecVal/percentageScale)<<std::endl;
-    }
 
     //get central value (expected)
     int nptsC = limit->Draw(Form("limit*%g:mh", percentageScale), "quantileExpected==0.5", "goff");
     double* rtmpC = limit->GetV1();
     double* mtmpC = limit->GetV2();
-    for (int i=0;i<nptsC;i++)
-	    std::cout<<"\ni for central: "<<i<<", mtmpC: "<<mtmp[i]<<", rtmpC: "<<rtmpC[i];
+    for (int i=0;i<nptsC;i++) {
+	std::cout<<"\ni for central: "<<i<<", mtmpC: "<<mtmp[i]<<", rtmpC: "<<rtmpC[i];
+    }
     // multiplyXsec(rtmpC,xsecs);
-    //TGraph* g_central = new TGraph(npts,mtmpC,rtmpC);
     TGraph* g_central = new TGraph(npts,masses_i.data(),rtmpC);
     g_central->SetLineColor(kBlack);
     g_central->SetLineStyle(3);
@@ -311,15 +246,6 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
         getRange(npts*2,g_two->GetY(),ymin,ymax);
     }
 
-    std::ofstream myfile;
-    myfile.open("median_1D_limits_"+ch+".txt", ios::in|ios::ate);
-
-    for(int m = 0; m < npts; ++m){
-	std::cout<<mtmp[m]<<"\t"<<m1<<"\t"<<(rtmp[m]*xsecVal/percentageScale)<<"\t"<<(rtmpC[m]*xsecVal/percentageScale)<<std::endl;
-	myfile<<mtmp[m]<<"\t"<<m1<<"\t"<<(rtmp[m]*xsecVal/percentageScale)<<"\t"<<(rtmpC[m]*xsecVal/percentageScale)<<std::endl; // convert to cross section
-    }
-
-    myfile.close();
     //extend range
     ymax = ymax*2 ;
     ymin = ymin/2;
@@ -329,7 +255,7 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     std::cout<<"\n\n---------------- \n For hbase, xmin: "<<xmin<<", xmax: "<<xmax<<std::endl;
     hbase->GetYaxis()->SetMaxDigits(4);
     hbase->GetYaxis()->SetTitle(yname.c_str());
-    hbase->GetYaxis()->SetTitleOffset(0.6); //(1.7);
+    hbase->GetYaxis()->SetTitleOffset(0.6);
     hbase->GetXaxis()->SetTitle(xname.c_str());
     hbase->GetXaxis()->SetTitleOffset(1.7);
     hbase->GetXaxis()->SetTitleSize(0.95);
@@ -338,8 +264,8 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     hbase->GetXaxis()->SetLabelOffset(1.0);
     hbase->GetXaxis()->CenterLabels(true);
     for (int i=1;i<=n;i++){
-            hbase->GetXaxis()->SetBinLabel(i+1,range[i-1]);
-	    }
+        hbase->GetXaxis()->SetBinLabel(i+1,range[i-1]);
+    }
     hbase->GetXaxis()->SetRangeUser(0., n+1);
     hbase->LabelsOption("u", "X");
     if (signame == "4b2t" && ch == "allchannels") hbase->GetYaxis()->SetRangeUser(0, 300);
@@ -351,19 +277,19 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     cout<<"the year is "<<year<<endl;
     int lumi = 10;
     if (year=="2016preVFP"){
-      lumi = 19500;
+        lumi = 19500;
     }
     if (year=="2016postVFP"){
-      lumi = 16800;
+        lumi = 16800;
     }
     if(year=="2017"){
-      lumi = 41500;
+        lumi = 41500;
     }
     if(year=="2018"){
-      lumi = 59800;
+        lumi = 59800;
     }
     if(year=="allyears"){
-      lumi = 138000;
+        lumi = 138000;
     }
 
     Plot plot("plotLimit_"+year+"_a1a2_"+signame+"_"+ch,lumi,false,false);
@@ -393,10 +319,10 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
         // horizontal bar half-width
         g_central_err->SetPointEXlow(i, 0.45);
         g_central_err->SetPointEXhigh(i, 0.45);
-    	// no vertical error
-    	g_central_err->SetPointEYlow(i, 0.0);
-    	g_central_err->SetPointEYhigh(i, 0.0);
-	}
+        // no vertical error
+        g_central_err->SetPointEYlow(i, 0.0);
+        g_central_err->SetPointEYhigh(i, 0.0);
+    }
     g_central_err->SetLineColor(kBlack);
     g_central_err->SetLineStyle(3);
     g_central_err->SetLineWidth(2);
@@ -407,19 +333,19 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     TGraphAsymmErrors *g_obs_err =new TGraphAsymmErrors(g_obs->GetN());
 
     for (int i = 0; i < g_obs->GetN(); ++i) {
-    	double x, y;
-    	g_obs->GetPoint(i, x, y);
-
-    	g_obs_err->SetPoint(i, x, y);
-
-    	// horizontal bar half-width
-    	g_obs_err->SetPointEXlow(i, 0.45);
-    	g_obs_err->SetPointEXhigh(i, 0.45);
-
-    	// no vertical error
-    	g_obs_err->SetPointEYlow(i, 0.0);
-    	g_obs_err->SetPointEYhigh(i, 0.0);
-	}
+        double x, y;
+        g_obs->GetPoint(i, x, y);
+        
+        g_obs_err->SetPoint(i, x, y);
+        
+        // horizontal bar half-width
+        g_obs_err->SetPointEXlow(i, 0.45);
+        g_obs_err->SetPointEXhigh(i, 0.45);
+        
+        // no vertical error
+        g_obs_err->SetPointEYlow(i, 0.0);
+        g_obs_err->SetPointEYhigh(i, 0.0);
+    }
     g_obs_err->SetMarkerStyle(20);
     g_obs_err->SetMarkerSize(2);
     g_obs_err->SetMarkerColor(kBlack);	
@@ -431,17 +357,17 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     for (int i = 0; i < g_one->GetN()/2; ++i) {
         double x,y, ylow, yhigh;
         g_central->GetPoint(i, x, y);
-        g_one->GetPoint(i, x, yhigh);//, ylow, yhigh);
-        g_one->GetPoint(g_one->GetN()-1-i, x, ylow);//, ylow, yhigh);
+        g_one->GetPoint(i, x, yhigh);
+        g_one->GetPoint(g_one->GetN()-1-i, x, ylow);
         std::cout<<"\n x: "<<x<<", y: "<<yhigh<<"\n";
-        g_one_err->SetPoint(i, x, y);//, ylow, yhigh);
+        g_one_err->SetPoint(i, x, y);
 
         g_one_err->SetPointEXlow(i, 0.45);
         g_one_err->SetPointEXhigh(i, 0.45);
 
         g_one_err->SetPointEYlow(i, (y-ylow));
         g_one_err->SetPointEYhigh(i, (yhigh-y));
-        }
+    }
     g_one_err->SetFillColor(cOne);
     g_one_err->SetLineColor(cOne); 
     g_one_err->SetMarkerSize(0); 
@@ -453,7 +379,7 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
         g_central->GetPoint(i, x, y);
         g_two->GetPoint(i, x, yhigh);
         g_two->GetPoint(g_two->GetN()-1-i, x, ylow);
-	g_two_err->SetPoint(i, x, y);
+        g_two_err->SetPoint(i, x, y);
 
         // horizontal bar half-width
         g_two_err->SetPointEXlow(i, 0.45);
@@ -462,7 +388,7 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
         // no vertical error
         g_two_err->SetPointEYlow(i, (y-ylow));
         g_two_err->SetPointEYhigh(i,(yhigh-y));
-        }
+    }
     g_two_err->SetFillStyle(1001);
     g_two_err->SetFillColor(cTwo);
     g_two_err->SetLineColor(0); 
@@ -485,11 +411,11 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     gPad->RedrawAxis();
     std::string title = plot.GetName();
     if (doLog) {
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426/"+title+"_unrolled_logY.png").c_str(),"png");
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426/"+title+"_unrolled_logY.pdf").c_str(),"pdf");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426_bdt/"+title+"_unrolled_logY.png").c_str(),"png");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426_bdt/"+title+"_unrolled_logY.pdf").c_str(),"pdf");
     }
     else {
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426/"+title+"_unrolled.png").c_str(),"png");
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426/"+title+"_unrolled.pdf").c_str(),"pdf");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426_bdt/"+title+"_unrolled.png").c_str(),"png");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426_bdt/"+title+"_unrolled.pdf").c_str(),"pdf");
     }
 }
