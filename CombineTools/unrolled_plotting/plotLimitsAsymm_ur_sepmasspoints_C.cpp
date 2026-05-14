@@ -51,7 +51,7 @@ TGraph* getBand(TTree* limit, double q_dn, double q_up, const vector<double>& xs
     double* rtmp_dn = limit->GetV1();
     double* mtmp_dn = limit->GetV2();
     std::cout<< "\n rtmp_dn in getBand: " << limit->GetV1();
-    // multiplyXsec(rtmp_dn,xsecs);
+    multiplyXsec(rtmp_dn,xsecs);
     if (scale != 1.0) {
         scaleArray(rtmp_dn, npts, scale);
     }
@@ -70,7 +70,7 @@ TGraph* getBand(TTree* limit, double q_dn, double q_up, const vector<double>& xs
     npts = limit->Draw("limit:mh",ss_up.str().c_str(), "goff");
     double* rtmp_up = limit->GetV1();
     double* mtmp_up = limit->GetV2();
-    // multiplyXsec(rtmp_up,xsecs);
+    multiplyXsec(rtmp_up,xsecs);
     if (scale != 1.0) {
         scaleArray(rtmp_up, npts,
         scale);
@@ -142,19 +142,19 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     string process, yname, xname, channel;
 
     if (signame == "4b2t") {
-        process = "H #rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau4b";
-        yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau4b) [\%]";
+	process = "H #rightarrow #phi_{1} #phi_{2} #rightarrow 3 #phi_{1} #rightarrow 2#tau4b";
+        yname = "#sigma B_{C} [pb]";
     }
     else if (signame == "2b2t") {
-        process = "H #rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b";
-        yname = "B(H#rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b) [\%]";
+        process = "H #rightarrow #phi_{1} #phi_{2}, #phi_{1} #rightarrow 2#tau, #phi_{2} #rightarrow 2b";
+        yname = "#sigma B_{NC} [pb]";
     }
     xname ="(m_{#phi_{1}}, m_{#phi_{2}}) [GeV]";
 
-    if (ch == "mutau") { channel = "#mu#tau_{h} channel"; }
-    else if (ch == "etau") { channel = "e#tau_{h} channel"; }
-    else if (ch == "emu") { channel = "e#mu channel"; }
-    else if (ch == "allchannels") { channel = "Combined"; }
+    if (ch == "mutau") { channel = "#mu#tau_{h}"; }
+    else if (ch == "etau") { channel = "e#tau_{h}"; }
+    else if (ch == "emu") { channel = "e#mu"; }
+    else if (ch == "allchannels") { channel = "#mu#tau_{h}, e#tau_{h}, e#mu"; }
 
     //initialize legend
     double legsize =  0.055;
@@ -174,7 +174,7 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     double pavex1 = 0.085;
     double pavex2 = 0.32;
     double pavey2 = 0.92;
-    double pavey1 = 0.7; // 0.63 for adding "Cut-based"
+    double pavey1 = 0.65; // 0.56 for adding "Cut-based", 0.65 otherwise
     TPaveText* pave = new TPaveText(pavex1,pavey1,pavex2,pavey2,"NDC");
     pave->SetFillColorAlpha(0, 0);
     pave->SetBorderSize(0);
@@ -187,21 +187,21 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     //pave->AddText("Cut-based");
 
     //get observed limit
-    double percentageScale = 100;
+    double percentageScale = 1;
     int npts = limit->Draw(Form("limit*%g:limitErr*%g:mh", percentageScale, percentageScale), "quantileExpected==-1", "goff");
     double* rtmp = limit->GetV1();
     double* rerrtmp = limit->GetV2();
     double* mtmp = limit->GetV3();
 
-    const Int_t n = 20;
-    char const *range[n] = {"(15,30)","(15,40)","(15,50)","(15,60)","(15,70)","(15,80)","(15,90)","(15,100)","(15,110)","(20,40)","(20,50)","(20,60)","(20,70)","(20,80)","(20,90)","(20,100)","(30,60)","(30,70)","(30,80)","(30,90)"};
+    //const Int_t n = 20;
+    //char const *range[n] = {"(15,30)","(15,40)","(15,50)","(15,60)","(15,70)","(15,80)","(15,90)","(15,100)","(15,110)","(20,40)","(20,50)","(20,60)","(20,70)","(20,80)","(20,90)","(20,100)","(30,60)","(30,70)","(30,80)","(30,90)"};
 
     //// Change by hand \FIXME
     //if (signame == "2b2t")
-    //const Int_t n = 13;
-    //char const *range[n] = {"(15,20)","(15,30)","(20,30)","(20,40)","(30,40)","(30,50)","(30,60)","(40,50)","(40,60)","(40,70)","(40,80)","(50,60)","(50,70)"};
+    const Int_t n = 13;
+    char const *range[n] = {"(15,20)","(15,30)","(20,30)","(20,40)","(30,40)","(30,50)","(30,60)","(40,50)","(40,60)","(40,70)","(40,80)","(50,60)","(50,70)"};
 
-    // multiplyXsec(rtmp,xsecs);
+    multiplyXsec(rtmp,xsecs);
     TGraph* g_obs = new TGraph(npts,masses_i.data(),rtmp);
     g_obs->SetMarkerColor(kBlack);
     g_obs->SetLineColor(kBlack);
@@ -218,7 +218,7 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     for (int i=0;i<nptsC;i++) {
 	std::cout<<"\ni for central: "<<i<<", mtmpC: "<<mtmp[i]<<", rtmpC: "<<rtmpC[i];
     }
-    // multiplyXsec(rtmpC,xsecs);
+    multiplyXsec(rtmpC,xsecs);
     TGraph* g_central = new TGraph(npts,masses_i.data(),rtmpC);
     g_central->SetLineColor(kBlack);
     g_central->SetLineStyle(3);
@@ -270,8 +270,8 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     hbase->LabelsOption("u", "X");
     if (signame == "4b2t" && ch == "allchannels") hbase->GetYaxis()->SetRangeUser(0, 300);
     if (signame == "2b2t") hbase->GetYaxis()->SetRangeUser(0, 90);
-    if (doLog) hbase->GetYaxis()->SetRangeUser(1, 800);
-    if (doLog && signame == "4b2t") hbase->GetYaxis()->SetRangeUser(9.99, 1500);
+    if (doLog) hbase->GetYaxis()->SetRangeUser(0.5, 500);
+    if (doLog && signame == "4b2t") hbase->GetYaxis()->SetRangeUser(5, 1000);
 
     //make plot
     cout<<"the year is "<<year<<endl;
@@ -411,11 +411,11 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     gPad->RedrawAxis();
     std::string title = plot.GetName();
     if (doLog) {
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426_bdt/"+title+"_unrolled_logY.png").c_str(),"png");
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426_bdt/"+title+"_unrolled_logY.pdf").c_str(),"pdf");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v15/limits/"+title+"_unrolled_bdt_logY.png").c_str(),"png");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v15/limits/"+title+"_unrolled_bdt_logY.pdf").c_str(),"pdf");
     }
     else {
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426_bdt/"+title+"_unrolled.png").c_str(),"png");
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/limits/010426_bdt/"+title+"_unrolled.pdf").c_str(),"pdf");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v15/limits/"+title+"_unrolled_bdt.png").c_str(),"png");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v15/limits/"+title+"_unrolled_bdt.pdf").c_str(),"pdf");
     }
 }

@@ -37,7 +37,8 @@ void plot2d(string ch)
   hist->GetYaxis()->SetTitleOffset(1.);
 
   //hist->GetZaxis()->SetTitle("95% CL upper limit on #sigma(H#rightarrow #phi_{1} #phi_{2} #rightarrow2#tau4b/2#tau2b) (pb)");
-  hist->GetZaxis()->SetTitle("#sigma_{SM}B(H #rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau4b,2#tau2b) [pb]");
+  //hist->GetZaxis()->SetTitle("#sigma_{SM}B(H #rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau4b,2#tau2b) [pb]");
+  hist->GetZaxis()->SetTitle("#sigma B_{C} , #sigma B_{NC} [pb]");
   hist->GetZaxis()->CenterTitle();  // Optional: Center the title
   hist->GetZaxis()->SetTitleOffset(1.4);  // Adjust to push the title to the right
   hist->GetZaxis()->SetTitleSize(0.048);
@@ -69,7 +70,7 @@ void plot2d(string ch)
   if (ch == "mutau") { channel = "#mu#tau_{h}"; }
   else if (ch == "etau") { channel = "e#tau_{h}"; }
   else if (ch == "emu") { channel = "e#mu"; }
-  else if (ch == "allchannels") { channel = "Combined"; }
+  else if (ch == "allchannels") { channel = "#mu#tau_{h}, e#tau_{h}, e#mu"; }
   TPaveText* pave = new TPaveText(0.57,0.69,0.78,0.82,"NDC");
   pave->SetFillColor(0);
   pave->SetBorderSize(0);
