@@ -146,8 +146,9 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
         yname = "#sigma B_{C} [pb]";
     }
     else if (signame == "2b2t") {
-        process = "H #rightarrow #phi_{1} #phi_{2}, #phi_{1} #rightarrow 2#tau, #phi_{2} #rightarrow 2b";
-        yname = "#sigma B_{NC} [pb]";
+        //process = "H #rightarrow #phi_{1} #phi_{2}, #phi_{1} #rightarrow 2#tau, #phi_{2} #rightarrow 2b";
+	process = "H #rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b";
+        yname = "#sigma B_{NC(incl.)} [pb]";
     }
     xname ="(m_{#phi_{1}}, m_{#phi_{2}}) [GeV]";
 
@@ -174,7 +175,7 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     double pavex1 = 0.085;
     double pavex2 = 0.32;
     double pavey2 = 0.92;
-    double pavey1 = 0.65; // 0.56 for adding "Cut-based", 0.65 otherwise
+    double pavey1 = 0.56; // 0.56 for adding "Cut-based", 0.65 otherwise
     TPaveText* pave = new TPaveText(pavex1,pavey1,pavex2,pavey2,"NDC");
     pave->SetFillColorAlpha(0, 0);
     pave->SetBorderSize(0);
@@ -184,7 +185,7 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     pave->AddText("#bf{CMS}");// #it{Preliminary}");
     pave->AddText(process.c_str());
     pave->AddText(channel.c_str());
-    //pave->AddText("Cut-based");
+    pave->AddText("Cut-based");
 
     //get observed limit
     double percentageScale = 1;
@@ -411,11 +412,11 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     gPad->RedrawAxis();
     std::string title = plot.GetName();
     if (doLog) {
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v15/limits/"+title+"_unrolled_bdt_logY.png").c_str(),"png");
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v15/limits/"+title+"_unrolled_bdt_logY.pdf").c_str(),"pdf");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v26/limits/"+title+"_unrolled_logY.png").c_str(),"png");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v26/limits/"+title+"_unrolled_logY.pdf").c_str(),"pdf");
     }
     else {
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v15/limits/"+title+"_unrolled_bdt.png").c_str(),"png");
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v15/limits/"+title+"_unrolled_bdt.pdf").c_str(),"pdf");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v26/limits/"+title+"_unrolled_bdt.png").c_str(),"png");
+        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v26/limits/"+title+"_unrolled_bdt.pdf").c_str(),"pdf");
     }
 }

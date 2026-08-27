@@ -29,11 +29,11 @@ allMasses = {
                 [[60, 30], [70, 30], [80, 30], [90, 30]],
             ],
     "2b2t": [
-                [[20, 15], [30, 15]],
-                [[30, 20], [40, 20]],
-                [[40, 30], [50, 30], [60, 30]],
-                [[50, 40], [60, 40], [70, 40], [80, 40]],
-                [[60, 50], [70, 50]],
+                [[20, 15, 0.52259], [30, 15, 0.51097]],
+                [[30, 20, 0.48836], [40, 20, 0.47267]],
+                [[40, 30, 0.48428], [50, 30, 0.47153], [60, 30, 0.46146]],
+                [[50, 40, 0.48722], [60, 40, 0.47712], [70, 40, 0.46881], [80, 40, 0.46154]],
+                [[60, 50, 0.48989], [70, 50, 0.48156]],
     ]
 }
 
@@ -46,17 +46,24 @@ for channel in channels:
             command=f"hToA1A2_modified {channel} {signalType} {year} {masspoint[0]} {masspoint[1]} 3 lowMassSR mediumMassSR highMassSR"
             os.system(command)
 
-        os.system("mv hToA1A2*.txt asymmCards/")
-        os.system("mv hAsymm*.root asymmCards/")
+        os.system("mv hToA1A2*.txt asymmCards/signal2b2t_new/")
+        os.system("mv hAsymm*.root asymmCards/signal2b2t_new/")
 
         for masspoint in massList:
-            ch1_filename   = f"asymmCards/hToA1A2_{channel}_1_{year}_{signalType}_{masspoint[0]}_{masspoint[1]}.txt"
-            ch2_filename   = f"asymmCards/hToA1A2_{channel}_2_{year}_{signalType}_{masspoint[0]}_{masspoint[1]}.txt"
-            ch3_filename   = f"asymmCards/hToA1A2_{channel}_3_{year}_{signalType}_{masspoint[0]}_{masspoint[1]}.txt"
-            allch_filename = f"asymmCards/hToA1A2_{signalType}_{channel}_{year}_{masspoint[0]}_{masspoint[1]}.txt"
+            ch1_filename   = f"asymmCards/signal2b2t_new/hToA1A2_{channel}_1_{year}_{signalType}_{masspoint[0]}_{masspoint[1]}.txt"
+            ch2_filename   = f"asymmCards/signal2b2t_new/hToA1A2_{channel}_2_{year}_{signalType}_{masspoint[0]}_{masspoint[1]}.txt"
+            ch3_filename   = f"asymmCards/signal2b2t_new/hToA1A2_{channel}_3_{year}_{signalType}_{masspoint[0]}_{masspoint[1]}.txt"
+            allch_filename = f"asymmCards/signal2b2t_new/hToA1A2_{signalType}_{channel}_{year}_{masspoint[0]}_{masspoint[1]}.txt"
             os.system(f'echo "* autoMCStats 10 0" >> {ch1_filename}')
             os.system(f'echo "* autoMCStats 10 0" >> {ch2_filename}')
             os.system(f'echo "* autoMCStats 10 0" >> {ch3_filename}')
+            os.system(f'echo "BRnorm rateParam * ggh2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch1_filename}')
+            os.system(f'echo "BRnorm rateParam * vbf2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch1_filename}')
+            os.system(f'echo "BRnorm rateParam * ggh2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch2_filename}')
+            os.system(f'echo "BRnorm rateParam * vbf2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch2_filename}')
+            os.system(f'echo "BRnorm rateParam * ggh2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch3_filename}')
+            os.system(f'echo "BRnorm rateParam * vbf2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch3_filename}')
+
 
             os.system(f'combineCards.py {ch1_filename} {ch2_filename} {ch3_filename} > {allch_filename}')
 

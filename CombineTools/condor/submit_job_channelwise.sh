@@ -18,17 +18,17 @@ cd /afs/cern.ch/work/p/pdas/haa/luna/CMSSW_14_1_0_pre4/src/CombineHarvester/Comb
 cmsenv
 ulimit -s unlimited
 
-cd asymmCards/
+cd asymmCards/signal2b2t_new/
 
 combineCards.py hToA1A2_${signal}_${channel}_2018_${mass1}_${mass2}.txt hToA1A2_${signal}_${channel}_2017_${mass1}_${mass2}.txt hToA1A2_${signal}_${channel}_2016postVFP_${mass1}_${mass2}.txt hToA1A2_${signal}_${channel}_2016preVFP_${mass1}_${mass2}.txt > hToA1A2_${signal}_${channel}_allyears_${mass1}_${mass2}.txt
 
-cd ../
+cd ../../
 
-text2workspace.py asymmCards/hToA1A2_${signal}_${channel}_allyears_${mass1}_${mass2}.txt -m ${mass1}
+text2workspace.py asymmCards/signal2b2t_new/hToA1A2_${signal}_${channel}_allyears_${mass1}_${mass2}.txt -m ${mass1}
 cd condor/
-mkdir ${signal}_${channel}_${mass1}_${mass2}
-cd ${signal}_${channel}_${mass1}_${mass2}
-combine -M AsymptoticLimits /afs/cern.ch/work/p/pdas/haa/luna/CMSSW_14_1_0_pre4/src/CombineHarvester/CombineTools/asymmCards/hToA1A2_${signal}_${channel}_allyears_${mass1}_${mass2}.root --rMin=-10 -m ${mass1} | tee limits_${channel}_${signal}_${mass1}_${mass2}
+mkdir ${signal}_${channel}_${mass1}_${mass2}_signal2b2t_new
+cd ${signal}_${channel}_${mass1}_${mass2}_signal2b2t_new
+combine -M AsymptoticLimits /afs/cern.ch/work/p/pdas/haa/luna/CMSSW_14_1_0_pre4/src/CombineHarvester/CombineTools/asymmCards/signal2b2t_new/hToA1A2_${signal}_${channel}_allyears_${mass1}_${mass2}.root --freezeParameters BRnorm --rMin=-10 -m ${mass1} | tee limits_${channel}_${signal}_${mass1}_${mass2}
 
 EOF
 

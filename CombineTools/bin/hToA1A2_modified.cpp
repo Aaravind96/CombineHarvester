@@ -180,7 +180,8 @@ int main(int argc, char** argv) {
   }
     
   // Where the datacard is stored
-  string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/other_aux/shapes" + year + "/";
+  //string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/other_aux/shapes" + year + "/";
+  string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/other_aux_new/bdt/shapes" + year + "/";
     
   ch::CombineHarvester cb;
   // Uncomment this next line to see a *lot* of debug information
@@ -455,6 +456,9 @@ int main(int argc, char** argv) {
     // ttbar scale uncertainties (correlated across years so we need to rename later)
     addshapes(&cb, file, cats, {"ttbar"}, "CMS_renscfact_"+year, 1.00);
     addshapes(&cb, file, cats, {"ttbar"}, "CMS_facscfact_"+year, 1.00);
+
+    //addshapes(&cb, file, cats, JoinStr({sig_ggh,sig_vbf}), "CMS_isr_"+year, 1.00);
+    //addshapes(&cb, file, cats, JoinStr({sig_ggh,sig_vbf}), "CMS_fsr_"+year, 1.00);
  
     // tau tracking efficiency in embedded (on real tauh, no effect on fake bkg)
     if (channel=="etau" or channel=="mutau"){
