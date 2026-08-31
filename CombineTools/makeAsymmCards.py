@@ -57,12 +57,12 @@ for channel in channels:
             os.system(f'echo "* autoMCStats 10 0" >> {ch1_filename}')
             os.system(f'echo "* autoMCStats 10 0" >> {ch2_filename}')
             os.system(f'echo "* autoMCStats 10 0" >> {ch3_filename}')
-            os.system(f'echo "BRnorm rateParam * ggh2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch1_filename}')
-            os.system(f'echo "BRnorm rateParam * vbf2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch1_filename}')
-            os.system(f'echo "BRnorm rateParam * ggh2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch2_filename}')
-            os.system(f'echo "BRnorm rateParam * vbf2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch2_filename}')
-            os.system(f'echo "BRnorm rateParam * ggh2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch3_filename}')
-            os.system(f'echo "BRnorm rateParam * vbf2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch3_filename}')
+          #  os.system(f'echo "BRnorm rateParam * ggh2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch1_filename}')
+          #  os.system(f'echo "BRnorm rateParam * vbf2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch1_filename}')
+          #  os.system(f'echo "BRnorm rateParam * ggh2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch2_filename}')
+          #  os.system(f'echo "BRnorm rateParam * vbf2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch2_filename}')
+          #  os.system(f'echo "BRnorm rateParam * ggh2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch3_filename}')
+          #  os.system(f'echo "BRnorm rateParam * vbf2b2t-{masspoint[0]}-{masspoint[1]} {masspoint[2]}" >> {ch3_filename}')
 
 
             os.system(f'combineCards.py {ch1_filename} {ch2_filename} {ch3_filename} > {allch_filename}')

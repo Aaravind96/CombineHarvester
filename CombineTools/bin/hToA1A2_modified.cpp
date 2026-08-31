@@ -213,10 +213,10 @@ int main(int argc, char** argv) {
     
   // List of signals in the datacards
 
-  vector<string> sig_ggh = {"ggh" + signalType + "-" + mass1 + "-" + mass2};
-  vector<string> sig_vbf = {"vbf" + signalType + "-" + mass1 + "-" + mass2};
+  vector<string> sig_ggh = {"ggh" + signalType + "-" + mass1 + "-" + mass2 + "_new"};
+  vector<string> sig_vbf = {"vbf" + signalType + "-" + mass1 + "-" + mass2 + "_new"};
 
-  vector<string> sig_procs = {"ggh" + signalType + "-" + mass1 + "-" + mass2, "vbf" + signalType + "-" + mass1 + "-" + mass2};
+  vector<string> sig_procs = {"ggh" + signalType + "-" + mass1 + "-" + mass2 + "_new", "vbf" + signalType + "-" + mass1 + "-" + mass2 + "_new"};
 
   cb.AddProcesses({"*"}, {"hToA1A2"}, {year}, {channel}, sig_procs, cats, true);
 
