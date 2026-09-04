@@ -181,8 +181,9 @@ int main(int argc, char** argv) {
     
   // Where the datacard is stored
   //string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/other_aux/shapes" + year + "/";
-  string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/other_aux_new/bdt/shapes" + year + "/";
-    
+  string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/bdt/shapes" + year + "/";
+  //string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/other_aux_new/bdt/shapes" + year + "/";
+  
   ch::CombineHarvester cb;
   // Uncomment this next line to see a *lot* of debug information
   cb.SetVerbosity(3);

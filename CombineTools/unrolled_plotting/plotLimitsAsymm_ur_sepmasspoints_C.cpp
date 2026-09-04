@@ -146,9 +146,10 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
         yname = "#sigma B_{C} [pb]";
     }
     else if (signame == "2b2t") {
+        process = "H #rightarrow #phi_{1} #phi_{2}, #phi_{1} #rightarrow 2b, #phi_{2} #rightarrow 2#tau";
         //process = "H #rightarrow #phi_{1} #phi_{2}, #phi_{1} #rightarrow 2#tau, #phi_{2} #rightarrow 2b";
-	process = "H #rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b";
-        yname = "#sigma B_{NC(incl.)} [pb]";
+	//process = "H #rightarrow #phi_{1} #phi_{2} #rightarrow 2#tau2b";
+        yname = "#sigma B_{NC'} [pb]";
     }
     xname ="(m_{#phi_{1}}, m_{#phi_{2}}) [GeV]";
 
@@ -185,7 +186,7 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     pave->AddText("#bf{CMS}");// #it{Preliminary}");
     pave->AddText(process.c_str());
     pave->AddText(channel.c_str());
-    pave->AddText("Cut-based");
+    //pave->AddText("Cut-based");
 
     //get observed limit
     double percentageScale = 1;
@@ -412,11 +413,11 @@ void plotLimitsAsymm_ur_sepmasspoints_C(string infile, string signame, string ye
     gPad->RedrawAxis();
     std::string title = plot.GetName();
     if (doLog) {
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v26/limits/"+title+"_unrolled_logY.png").c_str(),"png");
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v26/limits/"+title+"_unrolled_logY.pdf").c_str(),"pdf");
+        can->Print(("/eos/home-a/aaravind/www/Ha1a2/PAPER/v26/limits_A12b_A22t/"+title+"_unrolled_logY_bdt_re2.png").c_str(),"png");
+        can->Print(("/eos/home-a/aaravind/www/Ha1a2/PAPER/v26/limits_A12b_A22t/"+title+"_unrolled_logY_bdt_re2.pdf").c_str(),"pdf");
     }
     else {
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v26/limits/"+title+"_unrolled_bdt.png").c_str(),"png");
-        can->Print(("/eos/user/p/pdas/www/Ha1a2/dataMC/PAPER/v26/limits/"+title+"_unrolled_bdt.pdf").c_str(),"pdf");
+        can->Print(("/eos/home-a/aaravind/www/Ha1a2/PAPER/v26/limits_A12b_A22t/"+title+"_unrolled_bdt.png").c_str(),"png");
+        can->Print(("/eos/home-a/aaravind/www/Ha1a2/PAPER/v26/limits_A12b_A22t/"+title+"_unrolled_bdt.pdf").c_str(),"pdf");
     }
 }
